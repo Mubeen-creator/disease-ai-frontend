@@ -34,7 +34,9 @@ export function SignupForm() {
     setIsLoading(true);
 
     try {
-      await apiClient.signup(formData.name, formData.email, formData.password);
+      // clear any previous session
+localStorage.removeItem('session_id');
+await apiClient.signup(formData.name, formData.email, formData.password, formData.confirmPassword);
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Signup failed. Please try again.');

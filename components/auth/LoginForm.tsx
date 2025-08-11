@@ -1,32 +1,40 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Mail, Lock } from 'lucide-react';
-import { apiClient } from '@/lib/api';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, Mail, Lock } from "lucide-react";
+import { apiClient } from "@/lib/api";
 
 export function LoginForm() {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
+      // clear any previous session
+      localStorage.removeItem("session_id");
       await apiClient.login(formData.email, formData.password);
-      router.push('/dashboard');
+      router.push("/");
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please try again.');
+      setError(err.message || "Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -47,7 +55,7 @@ export function LoginForm() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
+
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <div className="relative">
@@ -58,12 +66,14 @@ export function LoginForm() {
                 placeholder="Enter your email"
                 className="pl-10"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 required
               />
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <div className="relative">
@@ -74,12 +84,14 @@ export function LoginForm() {
                 placeholder="Enter your password"
                 className="pl-10"
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
                 required
               />
             </div>
           </div>
-          
+
           <Button
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700"
@@ -91,10 +103,10 @@ export function LoginForm() {
                 Signing In...
               </>
             ) : (
-              'Sign In'
+              "Sign In"
             )}
           </Button>
-          
+
           <div className="text-center space-y-2">
             <Link
               href="/auth/forgot-password"
@@ -103,8 +115,11 @@ export function LoginForm() {
               Forgot your password?
             </Link>
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
-              <Link href="/auth/signup" className="text-blue-600 hover:underline">
+              Don't have an account?{" "}
+              <Link
+                href="/auth/signup"
+                className="text-blue-600 hover:underline"
+              >
                 Sign up
               </Link>
             </p>

@@ -1,8 +1,9 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+// Base URL of FastAPI backend (no trailing /api since endpoints are at root)
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 class ApiClient {
   private getAuthHeaders(): Record<string, string> {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('access_token');
     return {
       'Content-Type': 'application/json',
       ...(token && { Authorization: `Bearer ${token}` }),
@@ -18,29 +19,30 @@ class ApiClient {
   }
 
   async login(email: string, password: string) {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
     
-    const data = await this.handleResponse<{ token: string; user: any }>(response);
-    localStorage.setItem('auth_token', data.token);
+    const data = await this.handleResponse<{ access_token: string }>(response);
+    localStorage.setItem('access_token', data.access_token);
     return data;
   }
 
-  async signup(name: string, email: string, password: string) {
-    const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+  async signup(fullName: string, email: string, password: string, confirmPassword: string) {
+    const response = await fetch(`${API_BASE_URL}/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ fullName, email, password, confirmPassword }),
     });
     
-    const data = await this.handleResponse<{ token: string; user: any }>(response);
-    localStorage.setItem('auth_token', data.token);
+    const data = await this.handleResponse<{ access_token: string }>(response);
+    localStorage.setItem('access_token', data.access_token);
     return data;
   }
 
+  // no forgot-password endpoint in backend yet – retain for future use
   async forgotPassword(email: string) {
     const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
       method: 'POST',
@@ -51,18 +53,24 @@ class ApiClient {
     return this.handleResponse<{ message: string }>(response);
   }
 
-  async sendMessage(message: string) {
-    const response = await fetch(`${API_BASE_URL}/chat`, {
+  async sendMessage(message: string): Promise<{ response: string; session_id?: string }> {
+    const session_id = localStorage.getItem('session_id');
+    const payload = session_id ? { query: message, session_id } : { query: message };
+    const response = await fetch(`${API_BASE_URL}/ask`, {
       method: 'POST',
       headers: this.getAuthHeaders(),
-      body: JSON.stringify({ message }),
+      body: JSON.stringify(payload),
     });
     
-    return this.handleResponse<{ response: string }>(response);
+    const result = await this.handleResponse<{ answer: string; session_id: string }>(response);
+    if (result.session_id) {
+      localStorage.setItem('session_id', result.session_id);
+    }
+    return { response: result.answer };
   }
 
   async getProfile() {
-    const response = await fetch(`${API_BASE_URL}/profile`, {
+    const response = await fetch(`${API_BASE_URL}/me`, {
       headers: this.getAuthHeaders(),
     });
     
@@ -70,7 +78,8 @@ class ApiClient {
   }
 
   logout() {
-    localStorage.removeItem('auth_token');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('session_id');
   }
 }
 
