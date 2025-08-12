@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AuthProvider } from "@/app/auth/AuthContext";
 
+
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -12,6 +14,9 @@ export const metadata: Metadata = {
   keywords:
     "medical AI, health assistant, symptom checker, disease information, treatment options",
   authors: [{ name: "MedAI Assistant Team" }],
+  icons: {
+    icon: "/logo2.png",
+  },
   openGraph: {
     title: "MedAI Assistant - AI-Powered Medical Information",
     description:

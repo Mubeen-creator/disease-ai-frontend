@@ -46,7 +46,7 @@ export function Header({ showAuthButtons = true }: HeaderProps) {
         {isAuthenticated ? (
           <>
             <Link href="/dashboard" prefetch={false}>
-              <Button 
+              <Button
                 className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-medium"
               >
                 <Activity className="h-4 w-4 mr-2" />
@@ -54,8 +54,8 @@ export function Header({ showAuthButtons = true }: HeaderProps) {
               </Button>
             </Link>
             <Link href="/dashboard/profile" prefetch={false}>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200 font-medium"
               >
                 <User className="h-4 w-4 mr-2" />
@@ -71,8 +71,8 @@ export function Header({ showAuthButtons = true }: HeaderProps) {
                 Settings
               </Button>
             </Link> */}
-            <Button 
-              onClick={logout} 
+            <Button
+              onClick={logout}
               className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-medium"
             >
               <LogOut className="h-4 w-4 mr-2" />
@@ -82,15 +82,15 @@ export function Header({ showAuthButtons = true }: HeaderProps) {
         ) : (
           <>
             <Link href="/auth/login" prefetch={false}>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200 font-medium"
               >
                 Login
               </Button>
             </Link>
             <Link href="/auth/signup" prefetch={false}>
-              <Button 
+              <Button
                 className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-medium px-6"
               >
                 Get Started
@@ -104,23 +104,21 @@ export function Header({ showAuthButtons = true }: HeaderProps) {
 
   const MobileMenu = () => (
     <div
-      className={`lg:hidden fixed inset-0 z-50 transition-all duration-300 ${
-        isMobileMenuOpen 
-          ? "opacity-100 pointer-events-auto" 
+      className={`lg:hidden fixed inset-0 z-50 transition-all duration-300 ${isMobileMenuOpen
+          ? "opacity-100 pointer-events-auto"
           : "opacity-0 pointer-events-none"
-      }`}
+        }`}
     >
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={closeMobileMenu}
       />
-      
+
       {/* Menu Panel */}
       <div
-        className={`absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl transform transition-transform duration-300 ${
-          isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl transform transition-transform duration-300 ${isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
@@ -149,24 +147,24 @@ export function Header({ showAuthButtons = true }: HeaderProps) {
             ) : isAuthenticated ? (
               <>
                 <Link href="/dashboard" prefetch={false} onClick={closeMobileMenu}>
-                  <Button 
+                  <Button
                     className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 justify-start text-left h-12"
                   >
                     <Activity className="h-5 w-5 mr-3" />
                     Chat Dashboard
                   </Button>
                 </Link>
-                
+
                 <Link href="/dashboard/profile" prefetch={false} onClick={closeMobileMenu}>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     className="w-full justify-start text-left h-12 hover:bg-gray-100 transition-all duration-200"
                   >
                     <User className="h-5 w-5 mr-3 text-gray-500" />
                     Profile Settings
                   </Button>
                 </Link>
-                
+
                 {/* <Link href="/dashboard/settings" prefetch={false} onClick={closeMobileMenu}>
                   <Button 
                     variant="ghost" 
@@ -176,9 +174,9 @@ export function Header({ showAuthButtons = true }: HeaderProps) {
                     App Settings
                   </Button>
                 </Link> */}
-                
+
                 <div className="pt-4 border-t">
-                  <Button 
+                  <Button
                     onClick={() => {
                       logout();
                       closeMobileMenu();
@@ -193,16 +191,16 @@ export function Header({ showAuthButtons = true }: HeaderProps) {
             ) : (
               <>
                 <Link href="/auth/login" prefetch={false} onClick={closeMobileMenu}>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     className="w-full justify-start text-left h-12 hover:bg-gray-100 transition-all duration-200"
                   >
                     Sign In to Account
                   </Button>
                 </Link>
-                
+
                 <Link href="/auth/signup" prefetch={false} onClick={closeMobileMenu}>
-                  <Button 
+                  <Button
                     className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 justify-start text-left h-12"
                   >
                     Create New Account
@@ -218,33 +216,21 @@ export function Header({ showAuthButtons = true }: HeaderProps) {
 
   return (
     <>
-      <header 
-        className={`border-b sticky top-0 z-40 transition-all duration-300 ${
-          isScrolled
+      <header
+        className={`border-b sticky top-0 z-40 transition-all duration-300 ${isScrolled
             ? "bg-white/95 backdrop-blur-lg shadow-lg border-gray-200/50"
             : "bg-white/80 backdrop-blur-md border-gray-200"
-        }`}
+          }`}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-18">
-            {/* Logo */}
-            <Link
-              href="/"
-              className="flex items-center space-x-2 hover:opacity-80 transition-all duration-200 transform hover:scale-105"
-            >
-              <div className="p-1 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 shadow-md">
-                <Activity className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-              </div>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-1">
-                <span className="text-lg sm:text-xl font-bold text-gray-900 leading-tight">
-                  MedAI
-                </span>
-                <span className="text-sm sm:text-lg font-medium text-gray-600 leading-tight">
-                  Assistant
-                </span>
-              </div>
-            </Link>
-
+            <div className="w-[70px]">
+                <img
+                  src="/logo2.png"
+                  alt="MedAI Logo"
+                  className="object-contain"
+                />
+            </div>
             {/* Desktop Navigation */}
             {showAuthButtons && <AuthButtonsDesktop />}
 
