@@ -1,6 +1,12 @@
-import { Search, FileText, Users, Clock, Shield, Sparkles, Brain, Database, Zap, CheckCircle } from 'lucide-react';
+"use client"
+import { Search, FileText, Users, Clock, Shield, Sparkles, Brain, Database, Zap, CheckCircle, ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 
 export function Features() {
+  const [currentIndex, setCurrentIndex] = useState(1); // Start with middle card active
+  const [isHovered, setIsHovered] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
   const features = [
     {
       icon: Search,
@@ -66,6 +72,41 @@ export function Features() {
       highlight: 'Context-Aware AI',
     },
   ];
+
+  // Auto-scroll functionality
+  useEffect(() => {
+    if (!isHovered) {
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prevIndex) => {
+          return prevIndex >= features.length - 1 ? 0 : prevIndex + 1;
+        });
+      }, 3000);
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isHovered, features.length]);
+
+  const goToPrevious = () => {
+    setCurrentIndex(prevIndex => prevIndex <= 0 ? features.length - 1 : prevIndex - 1);
+  };
+
+  const goToNext = () => {
+    setCurrentIndex(prevIndex => prevIndex >= features.length - 1 ? 0 : prevIndex + 1);
+  };
+
+  const getVisibleCards = () => {
+    const cards = [];
+    for (let i = 0; i < 3; i++) {
+      const index = (currentIndex - 1 + i + features.length) % features.length;
+      cards.push({ ...features[index], position: i });
+    }
+    return cards;
+  };
+
   return (
     <section id="features" className="py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -77,37 +118,90 @@ export function Features() {
             Our AI-powered platform provides comprehensive medical assistance with cutting-edge technology
           </p>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="group p-8 bg-gray-50 rounded-2xl hover:bg-white hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-gray-200"
-            >
-              <div className={`w-14 h-14 rounded-xl ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                <feature.icon className="w-7 h-7" />
-              </div>
-              
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                {feature.title}
-              </h3>
-              
-              <p className="text-gray-600 leading-relaxed">
-                {feature.description}
-              </p>
-              
-              <ul className="space-y-2">
-                {feature.details.map((detail, detailIndex) => (
-                  <li key={detailIndex} className="flex items-center text-sm text-gray-500">
-                    <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
-                    {detail}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+
+        {/* Main Features Carousel */}
+        <div className="relative mb-20 px-4">
+          <div
+            className="flex justify-center items-end gap-8 h-96"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            {getVisibleCards().map((feature, idx) => {
+              const isCenter = idx === 1;
+              return (
+                <div
+                  key={`${feature.title}-${idx}`}
+                  className={`transition-all duration-700 ease-in-out ${isCenter
+                      ? 'w-80 transform -translate-y-8 scale-105 z-20'
+                      : 'w-72 scale-95 opacity-75 z-10'
+                    }`}
+                >
+                  <div className={`group p-6 bg-white rounded-2xl border border-gray-200 hover:border-gray-300 h-full ${isCenter ? 'shadow-2xl' : 'shadow-lg hover:shadow-xl'
+                    } transition-all duration-300`}>
+                    <div className={`w-14 h-14 rounded-xl ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                      <feature.icon className="w-7 h-7" />
+                    </div>
+
+                    <h3 className={`font-semibold text-gray-900 mb-3 ${isCenter ? 'text-2xl' : 'text-xl'}`}>
+                      {feature.title}
+                    </h3>
+
+                    <p className={`text-gray-600 leading-relaxed mb-4 ${isCenter ? 'text-base' : 'text-sm'}`}>
+                      {feature.description}
+                    </p>
+
+                    <div className="space-y-2">
+                      {feature.details.slice(0, isCenter ? 4 : 2).map((detail, detailIndex) => (
+                        <div key={detailIndex} className="flex items-center text-sm text-gray-500">
+                          <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
+                          <span className="text-xs">{detail}</span>
+                        </div>
+                      ))}
+                      {!isCenter && feature.details.length > 2 && (
+                        <div className="text-xs text-gray-400 mt-2">
+                          +{feature.details.length - 2} more features
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Navigation Buttons */}
+          <button
+            onClick={goToPrevious}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 z-30"
+            aria-label="Previous features"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+
+          <button
+            onClick={goToNext}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 z-30"
+            aria-label="Next features"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+
+          {/* Dots Indicator */}
+          <div className="flex justify-center mt-8 space-x-2">
+            {features.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentIndex
+                    ? 'bg-blue-600 w-6'
+                    : 'bg-gray-300 hover:bg-gray-400'
+                  }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
-        
+
         {/* Advanced Features Section */}
         <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl p-8 md:p-12">
           <div className="text-center mb-12">
@@ -118,10 +212,10 @@ export function Features() {
               Discover the cutting-edge technology that powers our medical AI assistant
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             {advancedFeatures.map((feature, index) => (
-              <div key={index} className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300">
+              <div key={index} className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:transform hover:-translate-y-2">
                 <div className="flex items-center mb-4">
                   <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mr-3">
                     <feature.icon className="w-5 h-5 text-white" />
@@ -140,7 +234,7 @@ export function Features() {
             ))}
           </div>
         </div>
-        
+
         {/* How It Works */}
         <div className="mt-20">
           <div className="text-center mb-12">
@@ -151,7 +245,7 @@ export function Features() {
               Understanding our AI-powered medical assistance process
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <div className="flex items-start gap-4">
@@ -163,7 +257,7 @@ export function Features() {
                   <p className="text-gray-600 text-sm">Tell our AI about your symptoms, concerns, or medical questions in natural language.</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-4">
                 <div className="w-8 h-8 bg-green-100 text-green-600 rounded-full flex items-center justify-center font-semibold text-sm">
                   2
@@ -173,7 +267,7 @@ export function Features() {
                   <p className="text-gray-600 text-sm">Our LangGraph agents search medical databases and analyze your input using advanced algorithms.</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-4">
                 <div className="w-8 h-8 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center font-semibold text-sm">
                   3
@@ -184,7 +278,7 @@ export function Features() {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl p-8 text-center">
               <Brain className="w-16 h-16 text-blue-600 mx-auto mb-4" />
               <h4 className="text-xl font-semibold text-gray-900 mb-3">
@@ -205,3 +299,5 @@ export function Features() {
     </section>
   );
 }
+
+export default Features;
