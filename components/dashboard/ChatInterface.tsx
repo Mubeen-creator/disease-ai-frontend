@@ -195,35 +195,34 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
   const typewriterEffect = (text: string, messageId: string) => {
     setTypingMessageId(messageId);
     let currentIndex = 0;
-
-    // Add empty message first
+    const step = 10; // Number of characters to add at once
+  
     const emptyMessage: Message = {
       id: messageId,
       content: '',
       role: 'assistant',
       timestamp: new Date(),
     };
-
+  
     setMessages(prev => [...prev, emptyMessage]);
-
+  
     const typeInterval = setInterval(() => {
       if (currentIndex < text.length) {
         setMessages(prev =>
           prev.map(msg =>
             msg.id === messageId
-              ? { ...msg, content: text.slice(0, currentIndex + 1) }
+              ? { ...msg, content: text.slice(0, currentIndex + step) }
               : msg
           )
         );
-        currentIndex++;
+        currentIndex += step;
       } else {
         clearInterval(typeInterval);
         setTypingMessageId(null);
       }
-    }, 20); // Adjust speed here (lower = faster)
-
-    return () => clearInterval(typeInterval);
+    }, 5); // You can keep this low
   };
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
