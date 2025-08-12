@@ -278,7 +278,7 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
                   I can help you understand symptoms, provide information about diseases, and suggest treatments.
                 </p>
               </div>
-  
+
               <div className="grid md:grid-cols-2 gap-4 mb-8">
                 <div className="bg-white border border-gray-200 rounded-lg p-4 text-left hover:border-blue-300 transition-colors">
                   <h3 className="font-semibold text-gray-900 mb-2">🩺 Symptom Analysis</h3>
@@ -297,7 +297,7 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
                   <p className="text-sm text-gray-600">Use voice input and listen to responses</p>
                 </div>
               </div>
-  
+
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                 <p className="text-sm text-amber-800">
                   <strong>Important:</strong> This AI assistant provides educational information only.
@@ -319,7 +319,7 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
                 speakingMessageId={speakingMessageId}
               />
             ))}
-  
+
             {isLoading && (
               <div className="flex gap-3 p-4">
                 <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -330,56 +330,83 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
                 </div>
               </div>
             )}
-  
+
             <div ref={messagesEndRef} />
           </>
         )}
       </div>
-  
+
       {/* Input form - Fixed at bottom */}
-      <div className="border-t border-gray-200 p-4 bg-white flex-shrink-0">
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <div className="flex-1 relative">
-            <Input
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Describe your symptoms or ask a medical question..."
-              disabled={isLoading}
-              className="pr-12"
-            />
-            <Button
-              type="button"
-              onClick={isListening ? stopListening : startListening}
-              disabled={isLoading}
-              className={`absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 ${isListening
-                  ? 'bg-red-500 hover:bg-red-600'
-                  : 'bg-gray-500 hover:bg-gray-600'
-                }`}
-            >
-              {isListening ? (
-                <MicOff className="h-4 w-4" />
-              ) : (
-                <Mic className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
-          <Button
-            type="submit"
-            disabled={isLoading || !inputValue.trim()}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </form>
-        <div className="text-center mt-2">
-          {isListening && (
-            <p className="text-xs text-red-500 mb-1 animate-pulse">
-              🎤 Listening... Speak now
-            </p>
-          )}
-          <p className="text-xs text-gray-500">
-            This AI assistant provides educational information only. Always consult healthcare professionals for medical decisions.
-          </p>
+      <div className="bg-white border-t border-gray-200 flex-shrink-0">
+        {/* Main input container with subtle shadow and modern styling */}
+        <div className="max-w-4xl mx-auto p-4">
+          <form onSubmit={handleSubmit} className="relative">
+            <div className="flex items-end gap-3 bg-gray-50 rounded-2xl border border-gray-200 p-3 shadow-sm hover:shadow-md transition-shadow duration-200 focus-within:border-blue-300 focus-within:ring-2 focus-within:ring-blue-100">
+
+              {/* Voice button - left side */}
+              <Button
+                type="button"
+                onClick={isListening ? stopListening : startListening}
+                disabled={isLoading}
+                size="sm"
+                className={`h-10 w-10 rounded-full transition-all duration-600 ${isListening
+                    ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-700'
+                  }`}
+                variant="ghost"
+              >
+                {isListening ? (
+                  <MicOff className="h-4 w-4" />
+                ) : (
+                  <Mic className="h-4 w-4" />
+                )}
+              </Button>
+
+              {/* Input field */}
+              <div className="flex-1 min-w-0">
+                <Input
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="Describe your symptoms or ask a medical question..."
+                  disabled={isLoading}
+                  className="border-0 bg-transparent p-0 text-base placeholder:text-gray-500 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none min-h-[40px]"
+                  style={{ boxShadow: 'none' }}
+                />
+              </div>
+
+              {/* Send button - right side */}
+              <Button
+                type="submit"
+                disabled={isLoading || !inputValue.trim()}
+                size="sm"
+                className="h-10 w-10 rounded-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 transition-all duration-200 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+
+            {/* Status indicators */}
+            <div className="flex items-center justify-between mt-3">
+              <div className="flex items-center gap-2">
+                {isListening && (
+                  <div className="flex items-center gap-2 text-red-500 animate-pulse transition-all duration-600 ">
+                    <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                    <span className="text-xs transition-all duration-600 font-medium">Listening..</span>
+                  </div>
+                )}
+                {isLoading && !isListening && (
+                  <div className="flex items-center gap-2 text-blue-500">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                    <span className="text-xs font-medium">AI is thinking...</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
