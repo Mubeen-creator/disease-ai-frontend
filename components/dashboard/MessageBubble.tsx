@@ -1,6 +1,7 @@
 import { Bot, User } from 'lucide-react';
 import { Message } from '@/types';
 import { cn } from '@/lib/utils';
+import ReactMarkdown from 'react-markdown';
 
 interface MessageBubbleProps {
   message: Message;
@@ -23,9 +24,15 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           ? "bg-blue-600 text-white ml-auto" 
           : "bg-gray-100 text-gray-900"
       )}>
-        <p className="text-sm leading-relaxed whitespace-pre-wrap">
-          {message.content}
-        </p>
+        {isUser ? (
+          <p className="text-sm leading-relaxed whitespace-pre-wrap">
+            {message.content}
+          </p>
+        ) : (
+          <div className="text-sm leading-relaxed prose prose-sm max-w-none prose-headings:text-gray-900 prose-strong:text-gray-900 prose-p:text-gray-900 prose-li:text-gray-900">
+            <ReactMarkdown>{message.content}</ReactMarkdown>
+          </div>
+        )}
         <div className={cn(
           "text-xs mt-2 opacity-70",
           isUser ? "text-blue-100" : "text-gray-500"
