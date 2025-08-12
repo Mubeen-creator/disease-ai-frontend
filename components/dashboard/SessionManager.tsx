@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Plus, MessageSquare, Trash2 } from 'lucide-react';
+import { Plus, MessageSquare } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
@@ -85,9 +84,9 @@ export function SessionManager({ currentSessionId, onSessionSelect, onNewChat, r
   };
 
   return (
-    <div className="w-64 bg-gray-900 text-white flex flex-col h-full mb-0">
-      {/* Header */}
-      <div className="p-4 border-b border-gray-700">
+    <div className="fixed left-0 top-20 w-64 bg-gray-900 text-white flex flex-col h-[calc(100vh-80px)] z-40">
+      {/* Header - Fixed */}
+      <div className="flex-shrink-0 p-4 border-b border-gray-700">
         <Button
           onClick={onNewChat}
           className="w-full bg-gray-800 hover:bg-gray-700 text-white border border-gray-600"
@@ -99,40 +98,38 @@ export function SessionManager({ currentSessionId, onSessionSelect, onNewChat, r
       </div>
 
       {/* Sessions List */}
-      <div className="flex-1 overflow-hidden">
-        <ScrollArea className="h-full p-2">
-          {isLoading ? (
-            <div className="text-center text-gray-400 mt-4">Loading...</div>
-          ) : sessions.length === 0 ? (
-            <div className="text-center text-gray-400 mt-4">No chats yet</div>
-          ) : (
-            <div className="space-y-1">
-              {sessions.map((session) => (
-                <Button
-                  key={session.session_id}
-                  onClick={() => onSessionSelect(session.session_id)}
-                  className={cn(
-                    "w-full justify-start text-left p-3 h-auto bg-transparent hover:bg-gray-800 text-gray-300 hover:text-white border-none rounded-lg mb-1",
-                    currentSessionId === session.session_id && "bg-gray-800 text-white"
-                  )}
-                  variant="ghost"
-                >
-                  <div className="flex items-start gap-3 w-full">
-                    <MessageSquare className="h-4 w-4 mt-1 flex-shrink-0 text-gray-400" />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium truncate leading-5 mb-1">
-                        {getSessionPreview(session)}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {formatDate(session.last_activity)}
-                      </div>
+      <div className="flex-1 overflow-y-auto p-2">
+        {isLoading ? (
+          <div className="text-center text-gray-400 mt-4">Loading...</div>
+        ) : sessions.length === 0 ? (
+          <div className="text-center text-gray-400 mt-4">No chats yet</div>
+        ) : (
+          <div className="space-y-1">
+            {sessions.map((session) => (
+              <Button
+                key={session.session_id}
+                onClick={() => onSessionSelect(session.session_id)}
+                className={cn(
+                  "w-full justify-start text-left p-3 h-auto bg-transparent hover:bg-gray-800 text-gray-300 hover:text-white border-none rounded-lg mb-1",
+                  currentSessionId === session.session_id && "bg-gray-800 text-white"
+                )}
+                variant="ghost"
+              >
+                <div className="flex items-start gap-3 w-full">
+                  <MessageSquare className="h-4 w-4 mt-1 flex-shrink-0 text-gray-400" />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium truncate leading-5 mb-1">
+                      {getSessionPreview(session)}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {formatDate(session.last_activity)}
                     </div>
                   </div>
-                </Button>
-              ))}
-            </div>
-          )}
-        </ScrollArea>
+                </div>
+              </Button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

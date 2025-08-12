@@ -263,9 +263,9 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
   };
 
   return (
-    <div className="flex flex-col h-screen">
-      {/* Chat messages or Welcome screen */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+    <div className="h-screen flex flex-col">
+      {/* Chat messages area - takes all available space */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 && !isLoading ? (
           // Welcome Screen - Centered like Claude.ai/OpenAI
           <div className="flex items-center justify-center h-full">
@@ -278,7 +278,7 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
                   I can help you understand symptoms, provide information about diseases, and suggest treatments.
                 </p>
               </div>
-
+  
               <div className="grid md:grid-cols-2 gap-4 mb-8">
                 <div className="bg-white border border-gray-200 rounded-lg p-4 text-left hover:border-blue-300 transition-colors">
                   <h3 className="font-semibold text-gray-900 mb-2">🩺 Symptom Analysis</h3>
@@ -293,11 +293,11 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
                   <p className="text-sm text-gray-600">Get reliable information about diseases and conditions</p>
                 </div>
                 <div className="bg-white border border-gray-200 rounded-lg p-4 text-left hover:border-blue-300 transition-colors">
-                  <h3 className="font-semibold text-gray-900 mb-2">🎤 Voice Interaction</h3>
+                  <h3 className="font-semibent text-gray-900 mb-2">🎤 Voice Interaction</h3>
                   <p className="text-sm text-gray-600">Use voice input and listen to responses</p>
                 </div>
               </div>
-
+  
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                 <p className="text-sm text-amber-800">
                   <strong>Important:</strong> This AI assistant provides educational information only.
@@ -319,7 +319,7 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
                 speakingMessageId={speakingMessageId}
               />
             ))}
-
+  
             {isLoading && (
               <div className="flex gap-3 p-4">
                 <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -330,14 +330,14 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
                 </div>
               </div>
             )}
-
+  
             <div ref={messagesEndRef} />
           </>
         )}
       </div>
-
-      {/* Input form */}
-      <div className="border-t border-gray-200 p-4 bg-white">
+  
+      {/* Input form - Fixed at bottom */}
+      <div className="border-t border-gray-200 p-4 bg-white flex-shrink-0">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <div className="flex-1 relative">
             <Input

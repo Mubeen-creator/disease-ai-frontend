@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Sidebar } from '@/components/dashboard/Sidebar';
+import { Header } from '@/components/common/Header';
 import { isAuthenticated } from '@/lib/auth';
 import { Loader2 } from 'lucide-react';
 
@@ -34,13 +34,9 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar />
-      <div className="flex-1 md:ml-64">
-        <main className="h-screen overflow-hidden">
-          {children}
-        </main>
-      </div>
-    </div>
+    <>
+      <Header />
+      {children}
+    </>
   );
 }
