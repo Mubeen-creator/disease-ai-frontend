@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MessageBubble } from './MessageBubble';
-import { Send, Loader2 } from 'lucide-react';
+import { Send, Loader2, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 import { Message } from '@/types';
 import { apiClient } from '@/lib/api';
 
@@ -20,7 +20,12 @@ export function ChatInterface() {
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [typingMessageId, setTypingMessageId] = useState<string | null>(null);
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speakingMessageId, setSpeakingMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
+  const speechSynthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -29,6 +34,101 @@ export function ChatInterface() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'webkitSpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      recognitionRef.current.lang = 'en-US';
+
+      recognitionRef.current.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setInputValue(prev => prev + transcript);
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      if (speechSynthesisRef.current) {
+        speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  // Speech-to-text functions
+  const startListening = () => {
+    if (recognitionRef.current && !isListening) {
+      setIsListening(true);
+      recognitionRef.current.start();
+    }
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
+  };
+
+  // Text-to-speech functions
+  const speakMessage = (text: string, messageId: string) => {
+    if ('speechSynthesis' in window) {
+      // Stop any current speech
+      speechSynthesis.cancel();
+      
+      // Remove markdown formatting for speech
+      const cleanText = text.replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
+                           .replace(/\*(.*?)\*/g, '$1')     // Remove italic
+                           .replace(/#{1,6}\s/g, '')        // Remove headers
+                           .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links
+                           .replace(/`([^`]+)`/g, '$1');    // Remove code
+
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+
+      utterance.onstart = () => {
+        setIsSpeaking(true);
+        setSpeakingMessageId(messageId);
+      };
+
+      utterance.onend = () => {
+        setIsSpeaking(false);
+        setSpeakingMessageId(null);
+      };
+
+      utterance.onerror = () => {
+        setIsSpeaking(false);
+        setSpeakingMessageId(null);
+      };
+
+      speechSynthesisRef.current = utterance;
+      speechSynthesis.speak(utterance);
+    }
+  };
+
+  const stopSpeaking = () => {
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+      setIsSpeaking(false);
+      setSpeakingMessageId(null);
+    }
+  };
 
   // Typewriter effect function
   const typewriterEffect = (text: string, messageId: string) => {
@@ -101,7 +201,14 @@ export function ChatInterface() {
       {/* Chat messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         {messages.map((message) => (
-          <MessageBubble key={message.id} message={message} />
+          <MessageBubble 
+            key={message.id} 
+            message={message}
+            onSpeak={speakMessage}
+            onStopSpeaking={stopSpeaking}
+            isSpeaking={isSpeaking}
+            speakingMessageId={speakingMessageId}
+          />
         ))}
         
         {isLoading && (
@@ -121,13 +228,31 @@ export function ChatInterface() {
       {/* Input form */}
       <div className="border-t border-gray-200 p-4 bg-white">
         <form onSubmit={handleSubmit} className="flex gap-2">
-          <Input
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Describe your symptoms or ask a medical question..."
-            disabled={isLoading}
-            className="flex-1"
-          />
+          <div className="flex-1 relative">
+            <Input
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Describe your symptoms or ask a medical question..."
+              disabled={isLoading}
+              className="pr-12"
+            />
+            <Button
+              type="button"
+              onClick={isListening ? stopListening : startListening}
+              disabled={isLoading}
+              className={`absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 ${
+                isListening 
+                  ? 'bg-red-500 hover:bg-red-600' 
+                  : 'bg-gray-500 hover:bg-gray-600'
+              }`}
+            >
+              {isListening ? (
+                <MicOff className="h-4 w-4" />
+              ) : (
+                <Mic className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
           <Button 
             type="submit" 
             disabled={isLoading || !inputValue.trim()}
@@ -136,9 +261,16 @@ export function ChatInterface() {
             <Send className="h-4 w-4" />
           </Button>
         </form>
-        <p className="text-xs text-gray-500 mt-2 text-center">
-          This AI assistant provides educational information only. Always consult healthcare professionals for medical decisions.
-        </p>
+        <div className="text-center mt-2">
+          {isListening && (
+            <p className="text-xs text-red-500 mb-1 animate-pulse">
+              🎤 Listening... Speak now
+            </p>
+          )}
+          <p className="text-xs text-gray-500">
+            This AI assistant provides educational information only. Always consult healthcare professionals for medical decisions.
+          </p>
+        </div>
       </div>
     </div>
   );

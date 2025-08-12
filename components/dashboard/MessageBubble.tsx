@@ -1,14 +1,26 @@
-import { Bot, User } from 'lucide-react';
+import { Bot, User, Volume2, VolumeX } from 'lucide-react';
 import { Message } from '@/types';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
+import { Button } from '@/components/ui/button';
 
 interface MessageBubbleProps {
   message: Message;
+  onSpeak?: (text: string, messageId: string) => void;
+  onStopSpeaking?: () => void;
+  isSpeaking?: boolean;
+  speakingMessageId?: string | null;
 }
 
-export function MessageBubble({ message }: MessageBubbleProps) {
+export function MessageBubble({ 
+  message, 
+  onSpeak, 
+  onStopSpeaking, 
+  isSpeaking = false, 
+  speakingMessageId 
+}: MessageBubbleProps) {
   const isUser = message.role === 'user';
+  const isCurrentlySpeaking = isSpeaking && speakingMessageId === message.id;
   
   return (
     <div className={cn("flex gap-3 p-4", isUser ? "justify-end" : "justify-start")}>
@@ -34,10 +46,25 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           </div>
         )}
         <div className={cn(
-          "text-xs mt-2 opacity-70",
+          "flex items-center justify-between text-xs mt-2 opacity-70",
           isUser ? "text-blue-100" : "text-gray-500"
         )}>
-          {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          <span>
+            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </span>
+          {!isUser && onSpeak && onStopSpeaking && (
+            <Button
+              onClick={() => isCurrentlySpeaking ? onStopSpeaking() : onSpeak(message.content, message.id)}
+              className="h-6 w-6 p-0 bg-transparent hover:bg-gray-200 text-gray-600 hover:text-gray-800"
+              variant="ghost"
+            >
+              {isCurrentlySpeaking ? (
+                <VolumeX className="h-3 w-3" />
+              ) : (
+                <Volume2 className="h-3 w-3" />
+              )}
+            </Button>
+          )}
         </div>
       </div>
       
