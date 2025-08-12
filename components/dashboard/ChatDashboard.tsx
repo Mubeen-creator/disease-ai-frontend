@@ -58,7 +58,7 @@ function ResponsiveSessionManager({
             const firstUserMessage = messages.find(msg => msg.role === 'user');
             return {
               ...session,
-              first_query: firstUserMessage?.query || null
+              first_query: firstUserMessage?.content || firstUserMessage?.query || null
             };
           } catch (error) {
             console.error(`Failed to load messages for session ${session.session_id}:`, error);
@@ -93,11 +93,26 @@ function ResponsiveSessionManager({
 
   const getSessionPreview = (session: Session) => {
     if (session.first_query) {
-      return session.first_query.length > 50
-        ? session.first_query.substring(0, 50) + '...'
-        : session.first_query;
+      // Clean the query and get first few words
+      const cleanQuery = session.first_query.trim();
+      const words = cleanQuery.split(' ');
+      
+      // Take first 4-6 words or limit to 40 characters
+      let preview = '';
+      for (let i = 0; i < Math.min(words.length, 6); i++) {
+        const newPreview = preview + (i > 0 ? ' ' : '') + words[i];
+        if (newPreview.length > 40) break;
+        preview = newPreview;
+      }
+      
+      // Add ellipsis if original query is longer
+      if (preview.length < cleanQuery.length) {
+        preview += '...';
+      }
+      
+      return preview || 'New Chat';
     }
-    return `Chat ${session.session_id.slice(-8)}`;
+    return 'New Chat';
   };
 
   const handleSessionSelect = (sessionId: string) => {
