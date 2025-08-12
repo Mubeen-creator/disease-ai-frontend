@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 interface Session {
   session_id: string;
   last_activity: string;
+  first_query?: string | null; // Allow both undefined and null
 }
 
 interface SessionManagerProps {
@@ -31,7 +32,25 @@ export function SessionManager({ currentSessionId, onSessionSelect, onNewChat, r
     try {
       setIsLoading(true);
       const response = await apiClient.getSessions();
-      setSessions(response.sort((a, b) => 
+
+      // Load first query for each session
+      const sessionsWithQueries = await Promise.all(
+        response.map(async (session) => {
+          try {
+            const messages = await apiClient.getSessionMessages(session.session_id);
+            const firstUserMessage = messages.find(msg => msg.role === 'user');
+            return {
+              ...session,
+              first_query: firstUserMessage?.query || null
+            };
+          } catch (error) {
+            console.error(`Failed to load messages for session ${session.session_id}:`, error);
+            return { ...session, first_query: null };
+          }
+        })
+      );
+
+      setSessions(sessionsWithQueries.sort((a, b) =>
         new Date(b.last_activity).getTime() - new Date(a.last_activity).getTime()
       ));
     } catch (error) {
@@ -55,13 +74,18 @@ export function SessionManager({ currentSessionId, onSessionSelect, onNewChat, r
     }
   };
 
-  const getSessionPreview = (sessionId: string) => {
-    // For now, just show session ID. Later we can load first message
-    return `Chat ${sessionId.slice(-8)}`;
+  const getSessionPreview = (session: Session) => {
+    if (session.first_query) {
+      // Truncate long queries to 50 characters
+      return session.first_query.length > 50
+        ? session.first_query.substring(0, 50) + '...'
+        : session.first_query;
+    }
+    return `Chat ${session.session_id.slice(-8)}`;
   };
 
   return (
-    <div className="w-64 bg-gray-900 text-white flex flex-col h-full">
+    <div className="w-64 bg-gray-900 text-white flex flex-col h-full mt-[90px] mb-0">
       {/* Header */}
       <div className="p-4 border-b border-gray-700">
         <Button
@@ -75,39 +99,41 @@ export function SessionManager({ currentSessionId, onSessionSelect, onNewChat, r
       </div>
 
       {/* Sessions List */}
-      <ScrollArea className="flex-1 p-2">
-        {isLoading ? (
-          <div className="text-center text-gray-400 mt-4">Loading...</div>
-        ) : sessions.length === 0 ? (
-          <div className="text-center text-gray-400 mt-4">No chats yet</div>
-        ) : (
-          <div className="space-y-1">
-            {sessions.map((session) => (
-              <Button
-                key={session.session_id}
-                onClick={() => onSessionSelect(session.session_id)}
-                className={cn(
-                  "w-full justify-start text-left p-3 h-auto bg-transparent hover:bg-gray-800 text-gray-300 hover:text-white border-none",
-                  currentSessionId === session.session_id && "bg-gray-800 text-white"
-                )}
-                variant="ghost"
-              >
-                <div className="flex items-start gap-2 w-full">
-                  <MessageSquare className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">
-                      {getSessionPreview(session.session_id)}
-                    </div>
-                    <div className="text-xs text-gray-400">
-                      {formatDate(session.last_activity)}
+      <div className="flex-1 overflow-hidden">
+        <ScrollArea className="h-full p-2">
+          {isLoading ? (
+            <div className="text-center text-gray-400 mt-4">Loading...</div>
+          ) : sessions.length === 0 ? (
+            <div className="text-center text-gray-400 mt-4">No chats yet</div>
+          ) : (
+            <div className="space-y-1">
+              {sessions.map((session) => (
+                <Button
+                  key={session.session_id}
+                  onClick={() => onSessionSelect(session.session_id)}
+                  className={cn(
+                    "w-full justify-start text-left p-3 h-auto bg-transparent hover:bg-gray-800 text-gray-300 hover:text-white border-none rounded-lg mb-1",
+                    currentSessionId === session.session_id && "bg-gray-800 text-white"
+                  )}
+                  variant="ghost"
+                >
+                  <div className="flex items-start gap-3 w-full">
+                    <MessageSquare className="h-4 w-4 mt-1 flex-shrink-0 text-gray-400" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate leading-5 mb-1">
+                        {getSessionPreview(session)}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {formatDate(session.last_activity)}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Button>
-            ))}
-          </div>
-        )}
-      </ScrollArea>
+                </Button>
+              ))}
+            </div>
+          )}
+        </ScrollArea>
+      </div>
     </div>
   );
 }
