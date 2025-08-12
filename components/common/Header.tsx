@@ -1,18 +1,17 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/auth/AuthContext";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Activity, Loader2, Menu, X, User, Settings, LogOut } from "lucide-react";
+import { Activity, Loader2, Menu, X, User, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
+
 
 interface HeaderProps {
   showAuthButtons?: boolean;
 }
 
 export function Header({ showAuthButtons = true }: HeaderProps) {
-  const router = useRouter();
   const { isAuthenticated, logout, isLoading } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -105,8 +104,8 @@ export function Header({ showAuthButtons = true }: HeaderProps) {
   const MobileMenu = () => (
     <div
       className={`lg:hidden fixed inset-0 z-50 transition-all duration-300 ${isMobileMenuOpen
-          ? "opacity-100 pointer-events-auto"
-          : "opacity-0 pointer-events-none"
+        ? "opacity-100 pointer-events-auto"
+        : "opacity-0 pointer-events-none"
         }`}
     >
       {/* Backdrop */}
@@ -218,18 +217,20 @@ export function Header({ showAuthButtons = true }: HeaderProps) {
     <>
       <header
         className={`border-b sticky top-0 z-40 transition-all duration-300 ${isScrolled
-            ? "bg-white/95 backdrop-blur-lg shadow-lg border-gray-200/50"
-            : "bg-white/80 backdrop-blur-md border-gray-200"
+          ? "bg-white/95 backdrop-blur-lg shadow-lg border-gray-200/50"
+          : "bg-white/80 backdrop-blur-md border-gray-200"
           }`}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-18">
             <div className="w-[70px]">
+              <Link href="/">
                 <img
                   src="/logo2.png"
                   alt="MedAI Logo"
                   className="object-contain"
                 />
+              </Link>
             </div>
             {/* Desktop Navigation */}
             {showAuthButtons && <AuthButtonsDesktop />}

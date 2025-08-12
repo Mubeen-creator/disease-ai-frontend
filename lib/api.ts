@@ -82,7 +82,16 @@ class ApiClient {
       headers: this.getAuthHeaders(),
     });
     
-    return this.handleResponse<Array<{ query: string; answer: string; timestamp: string; role: string }>>(response);
+    return this.handleResponse<Array<{ content: string; query?: string; answer?: string; timestamp: string; role: string }>>(response);
+  }
+
+  async deleteSession(sessionId: string) {
+    const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders(),
+    });
+    
+    return this.handleResponse<{ message: string }>(response);
   }
 
   async getProfile() {

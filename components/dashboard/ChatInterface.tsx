@@ -4,9 +4,10 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MessageBubble } from './MessageBubble';
-import { Send, Loader2, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
+import { Send, Loader2, Mic, MicOff } from 'lucide-react';
 import { Message } from '@/types';
 import { apiClient } from '@/lib/api';
+import Link from 'next/link';
 
 interface ChatInterfaceProps {
   sessionId: string | null;
@@ -48,40 +49,14 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
       const sessionMessages = await apiClient.getSessionMessages(sessionId);
       const formattedMessages: Message[] = [];
 
-      // Group messages by query-answer pairs
-      const messageMap = new Map();
-      sessionMessages.forEach(msg => {
-        if (msg.role === 'user') {
-          messageMap.set(msg.timestamp, { user: msg, assistant: null });
-        } else if (msg.role === 'assistant') {
-          // Find the corresponding user message
-          const userEntry = Array.from(messageMap.values()).find(entry =>
-            entry.user && !entry.assistant && entry.user.query === msg.query
-          );
-          if (userEntry) {
-            userEntry.assistant = msg;
-          }
-        }
-      });
-
-      // Convert to Message format
-      Array.from(messageMap.values()).forEach((entry, index) => {
-        if (entry.user) {
-          formattedMessages.push({
-            id: `user-${index}`,
-            content: entry.user.query,
-            role: 'user',
-            timestamp: new Date(entry.user.timestamp),
-          });
-        }
-        if (entry.assistant) {
-          formattedMessages.push({
-            id: `assistant-${index}`,
-            content: entry.assistant.answer,
-            role: 'assistant',
-            timestamp: new Date(entry.assistant.timestamp),
-          });
-        }
+      // Convert messages directly since they're already in chronological order
+      sessionMessages.forEach((msg, index) => {
+        formattedMessages.push({
+          id: `${msg.role}-${index}-${msg.timestamp}`,
+          content: msg.content || msg.query || msg.answer || '', // Handle different field names
+          role: msg.role as 'user' | 'assistant',
+          timestamp: new Date(msg.timestamp),
+        });
       });
 
       setMessages(formattedMessages);
@@ -196,16 +171,16 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
     setTypingMessageId(messageId);
     let currentIndex = 0;
     const step = 10; // Number of characters to add at once
-  
+
     const emptyMessage: Message = {
       id: messageId,
       content: '',
       role: 'assistant',
       timestamp: new Date(),
     };
-  
+
     setMessages(prev => [...prev, emptyMessage]);
-  
+
     const typeInterval = setInterval(() => {
       if (currentIndex < text.length) {
         setMessages(prev =>
@@ -222,7 +197,7 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
       }
     }, 5); // You can keep this low
   };
-  
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -262,9 +237,20 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
   };
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-screen flex flex-col relative">
+      {/* Logo in top right corner */}
+      <div className="absolute top-4 right-4 z-50">
+        <Link href="/">
+          <img
+            src="/logo2.png"
+            alt="MedAI Logo"
+            className="w-12 h-12 object-contain hover:opacity-80 transition-opacity cursor-pointer"
+          />
+        </Link>
+      </div>
+
       {/* Chat messages area - takes all available space */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 pr-20">
         {messages.length === 0 && !isLoading ? (
           // Welcome Screen - Centered like Claude.ai/OpenAI
           <div className="flex items-center justify-center h-full">
@@ -349,8 +335,8 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
                 disabled={isLoading}
                 size="sm"
                 className={`h-10 w-10 rounded-full transition-all duration-600 ${isListening
-                    ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse'
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-700'
+                  ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse'
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-700'
                   }`}
                 variant="ghost"
               >
