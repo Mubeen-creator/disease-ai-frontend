@@ -38,13 +38,8 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
     if (sessionId) {
       loadSessionMessages(sessionId);
     } else {
-      // New chat - show welcome message
-      setMessages([{
-        id: 'welcome',
-        content: "Hello! I'm your AI medical assistant. I can help you understand symptoms, provide information about diseases, and suggest treatments. Please describe your symptoms or ask me about any medical condition you'd like to know more about.\n\nRemember: This is for educational purposes only and should not replace professional medical advice.",
-        role: 'assistant',
-        timestamp: new Date(),
-      }]);
+      // New chat - clear messages to show welcome screen
+      setMessages([]);
     }
   }, [sessionId]);
 
@@ -52,7 +47,7 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
     try {
       const sessionMessages = await apiClient.getSessionMessages(sessionId);
       const formattedMessages: Message[] = [];
-      
+
       // Group messages by query-answer pairs
       const messageMap = new Map();
       sessionMessages.forEach(msg => {
@@ -60,7 +55,7 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
           messageMap.set(msg.timestamp, { user: msg, assistant: null });
         } else if (msg.role === 'assistant') {
           // Find the corresponding user message
-          const userEntry = Array.from(messageMap.values()).find(entry => 
+          const userEntry = Array.from(messageMap.values()).find(entry =>
             entry.user && !entry.assistant && entry.user.query === msg.query
           );
           if (userEntry) {
@@ -155,13 +150,13 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
     if ('speechSynthesis' in window) {
       // Stop any current speech
       speechSynthesis.cancel();
-      
+
       // Remove markdown formatting for speech
       const cleanText = text.replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
-                           .replace(/\*(.*?)\*/g, '$1')     // Remove italic
-                           .replace(/#{1,6}\s/g, '')        // Remove headers
-                           .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links
-                           .replace(/`([^`]+)`/g, '$1');    // Remove code
+        .replace(/\*(.*?)\*/g, '$1')     // Remove italic
+        .replace(/#{1,6}\s/g, '')        // Remove headers
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links
+        .replace(/`([^`]+)`/g, '$1');    // Remove code
 
       const utterance = new SpeechSynthesisUtterance(cleanText);
       utterance.rate = 0.9;
@@ -200,7 +195,7 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
   const typewriterEffect = (text: string, messageId: string) => {
     setTypingMessageId(messageId);
     let currentIndex = 0;
-    
+
     // Add empty message first
     const emptyMessage: Message = {
       id: messageId,
@@ -208,14 +203,14 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
       role: 'assistant',
       timestamp: new Date(),
     };
-    
+
     setMessages(prev => [...prev, emptyMessage]);
-    
+
     const typeInterval = setInterval(() => {
       if (currentIndex < text.length) {
-        setMessages(prev => 
-          prev.map(msg => 
-            msg.id === messageId 
+        setMessages(prev =>
+          prev.map(msg =>
+            msg.id === messageId
               ? { ...msg, content: text.slice(0, currentIndex + 1) }
               : msg
           )
@@ -226,7 +221,7 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
         setTypingMessageId(null);
       }
     }, 20); // Adjust speed here (lower = faster)
-    
+
     return () => clearInterval(typeInterval);
   };
 
@@ -248,18 +243,18 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
     try {
       const response = await apiClient.sendMessage(inputValue, sessionId || undefined);
       const messageId = (Date.now() + 1).toString();
-      
+
       // If this was a new chat, notify parent about the new session
       if (!sessionId && response.session_id && onSessionUpdate) {
         onSessionUpdate(response.session_id);
       }
-      
+
       // Use typewriter effect for AI response
       typewriterEffect(response.response, messageId);
     } catch (error: any) {
       const errorMessageId = (Date.now() + 1).toString();
       const errorText = "I apologize, but I'm having trouble processing your request right now. Please try again later, or contact support if the problem persists.";
-      
+
       // Use typewriter effect for error message too
       typewriterEffect(errorText, errorMessageId);
     } finally {
@@ -269,31 +264,76 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
 
   return (
     <div className="flex flex-col h-screen">
-      {/* Chat messages */}
+      {/* Chat messages or Welcome screen */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
-        {messages.map((message) => (
-          <MessageBubble 
-            key={message.id} 
-            message={message}
-            onSpeak={speakMessage}
-            onStopSpeaking={stopSpeaking}
-            isSpeaking={isSpeaking}
-            speakingMessageId={speakingMessageId}
-          />
-        ))}
-        
-        {isLoading && (
-          <div className="flex gap-3 p-4">
-            <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-              <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
-            </div>
-            <div className="bg-gray-100 rounded-lg px-4 py-3">
-              <p className="text-sm text-gray-600">AI is thinking...</p>
+        {messages.length === 0 && !isLoading ? (
+          // Welcome Screen - Centered like Claude.ai/OpenAI
+          <div className="flex items-center justify-center h-full">
+            <div className="max-w-2xl mx-auto text-center px-6">
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-3">
+                  AI Medical Assistant
+                </h1>
+                <p className="text-lg text-gray-600 mb-6">
+                  I can help you understand symptoms, provide information about diseases, and suggest treatments.
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-8">
+                <div className="bg-white border border-gray-200 rounded-lg p-4 text-left hover:border-blue-300 transition-colors">
+                  <h3 className="font-semibold text-gray-900 mb-2">🩺 Symptom Analysis</h3>
+                  <p className="text-sm text-gray-600">Describe your symptoms and get insights about possible conditions</p>
+                </div>
+                <div className="bg-white border border-gray-200 rounded-lg p-4 text-left hover:border-blue-300 transition-colors">
+                  <h3 className="font-semibold text-gray-900 mb-2">💊 Treatment Information</h3>
+                  <p className="text-sm text-gray-600">Learn about treatment options and medical procedures</p>
+                </div>
+                <div className="bg-white border border-gray-200 rounded-lg p-4 text-left hover:border-blue-300 transition-colors">
+                  <h3 className="font-semibold text-gray-900 mb-2">🏥 Health Education</h3>
+                  <p className="text-sm text-gray-600">Get reliable information about diseases and conditions</p>
+                </div>
+                <div className="bg-white border border-gray-200 rounded-lg p-4 text-left hover:border-blue-300 transition-colors">
+                  <h3 className="font-semibold text-gray-900 mb-2">🎤 Voice Interaction</h3>
+                  <p className="text-sm text-gray-600">Use voice input and listen to responses</p>
+                </div>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <p className="text-sm text-amber-800">
+                  <strong>Important:</strong> This AI assistant provides educational information only.
+                  Always consult healthcare professionals for medical decisions and emergency situations.
+                </p>
+              </div>
             </div>
           </div>
+        ) : (
+          // Regular chat messages
+          <>
+            {messages.map((message) => (
+              <MessageBubble
+                key={message.id}
+                message={message}
+                onSpeak={speakMessage}
+                onStopSpeaking={stopSpeaking}
+                isSpeaking={isSpeaking}
+                speakingMessageId={speakingMessageId}
+              />
+            ))}
+
+            {isLoading && (
+              <div className="flex gap-3 p-4">
+                <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
+                </div>
+                <div className="bg-gray-100 rounded-lg px-4 py-3">
+                  <p className="text-sm text-gray-600">AI is thinking...</p>
+                </div>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </>
         )}
-        
-        <div ref={messagesEndRef} />
       </div>
 
       {/* Input form */}
@@ -311,11 +351,10 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
               type="button"
               onClick={isListening ? stopListening : startListening}
               disabled={isLoading}
-              className={`absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 ${
-                isListening 
-                  ? 'bg-red-500 hover:bg-red-600' 
+              className={`absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 ${isListening
+                  ? 'bg-red-500 hover:bg-red-600'
                   : 'bg-gray-500 hover:bg-gray-600'
-              }`}
+                }`}
             >
               {isListening ? (
                 <MicOff className="h-4 w-4" />
@@ -324,8 +363,8 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
               )}
             </Button>
           </div>
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             disabled={isLoading || !inputValue.trim()}
             className="bg-blue-600 hover:bg-blue-700"
           >

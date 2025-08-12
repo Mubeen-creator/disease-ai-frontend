@@ -85,7 +85,7 @@ export function SessionManager({ currentSessionId, onSessionSelect, onNewChat, r
   };
 
   return (
-    <div className="w-64 bg-gray-900 text-white flex flex-col h-full mt-[90px] mb-0">
+    <div className="w-64 bg-gray-900 text-white flex flex-col h-full mb-0">
       {/* Header */}
       <div className="p-4 border-b border-gray-700">
         <Button
