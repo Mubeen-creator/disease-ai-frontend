@@ -238,17 +238,6 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
 
   return (
     <div className="h-screen flex flex-col relative">
-      {/* Logo in top right corner */}
-      <div className="absolute top-4 right-4 z-50">
-        <Link href="/">
-          <img
-            src="/logo2.png"
-            alt="MedAI Logo"
-            className="w-12 h-12 object-contain hover:opacity-80 transition-opacity cursor-pointer"
-          />
-        </Link>
-      </div>
-
       {/* Chat messages area - takes all available space */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 pr-20">
         {messages.length === 0 && !isLoading ? (
