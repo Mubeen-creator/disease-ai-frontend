@@ -61,15 +61,15 @@ export function Footer() {
             <div className="space-y-3">
               <div className="flex items-center text-gray-400">
                 <Mail className="w-4 h-4 mr-3" />
-                support@medai.com
+                mmaj8855@gmail.com
               </div>
               <div className="flex items-center text-gray-400">
                 <Phone className="w-4 h-4 mr-3" />
-                +1 (555) 123-4567
+                +92 XXXXXXXXXX
               </div>
               <div className="flex items-center text-gray-400">
                 <MapPin className="w-4 h-4 mr-3" />
-                San Francisco, CA
+                Faisalabad, Punjab, Pakistan
               </div>
             </div>
           </div>

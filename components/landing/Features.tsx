@@ -3,12 +3,14 @@ import { Search, FileText, Users, Clock, Shield, Sparkles, Brain, Database, Zap,
 import { useState, useEffect, useRef } from 'react';
 
 export function Features() {
-  const [currentIndex, setCurrentIndex] = useState(1); // Start with middle card active
+  const [currentIndex, setCurrentIndex] = useState(1);
   const [isHovered, setIsHovered] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const features = [
     {
+      id: 1,
       icon: Search,
       title: 'Symptom Analysis',
       description: 'Describe your symptoms and get AI-powered analysis of possible conditions and recommendations.',
@@ -16,6 +18,7 @@ export function Features() {
       details: ['Multi-symptom correlation', 'Severity assessment', 'Risk factor analysis', 'Differential diagnosis'],
     },
     {
+      id: 2,
       icon: FileText,
       title: 'Disease Information',
       description: 'Get comprehensive information about diseases, including causes, symptoms, and treatments.',
@@ -23,6 +26,7 @@ export function Features() {
       details: ['Detailed pathophysiology', 'Clinical presentations', 'Diagnostic criteria', 'Prognosis information'],
     },
     {
+      id: 3,
       icon: Sparkles,
       title: 'Treatment Suggestions',
       description: 'Receive evidence-based treatment options and management strategies for various conditions.',
@@ -30,6 +34,7 @@ export function Features() {
       details: ['First-line treatments', 'Alternative therapies', 'Lifestyle modifications', 'Follow-up care'],
     },
     {
+      id: 4,
       icon: Clock,
       title: '24/7 Availability',
       description: 'Access medical information and guidance whenever you need it, day or night.',
@@ -37,6 +42,7 @@ export function Features() {
       details: ['Instant responses', 'No appointment needed', 'Global accessibility', 'Multi-language support'],
     },
     {
+      id: 5,
       icon: Users,
       title: 'Expert Knowledge',
       description: 'Powered by medical databases and peer-reviewed research from trusted sources.',
@@ -44,6 +50,7 @@ export function Features() {
       details: ['PubMed integration', 'Clinical guidelines', 'Medical textbooks', 'Research papers'],
     },
     {
+      id: 6,
       icon: Shield,
       title: 'Privacy First',
       description: 'Your health data is encrypted and secure. We never share your personal information.',
@@ -73,14 +80,30 @@ export function Features() {
     },
   ];
 
-  // Auto-scroll functionality
+  // Improved auto-scroll functionality
   useEffect(() => {
-    if (!isHovered) {
+    const startAutoScroll = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      
       intervalRef.current = setInterval(() => {
-        setCurrentIndex((prevIndex) => {
-          return prevIndex >= features.length - 1 ? 0 : prevIndex + 1;
-        });
-      }, 3000);
+        if (!isHovered && !isTransitioning) {
+          setIsTransitioning(true);
+          setCurrentIndex((prevIndex) => {
+            return prevIndex >= features.length - 1 ? 0 : prevIndex + 1;
+          });
+          
+          // Reset transitioning state after animation completes
+          setTimeout(() => setIsTransitioning(false), 600);
+        }
+      }, 4000); // Increased to 4 seconds for better UX
+    };
+
+    if (!isHovered) {
+      startAutoScroll();
+    } else if (intervalRef.current) {
+      clearInterval(intervalRef.current);
     }
 
     return () => {
@@ -88,22 +111,57 @@ export function Features() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isHovered, features.length]);
+  }, [isHovered, isTransitioning, features.length]);
 
   const goToPrevious = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
     setCurrentIndex(prevIndex => prevIndex <= 0 ? features.length - 1 : prevIndex - 1);
+    setTimeout(() => setIsTransitioning(false), 600);
   };
 
   const goToNext = () => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
     setCurrentIndex(prevIndex => prevIndex >= features.length - 1 ? 0 : prevIndex + 1);
+    setTimeout(() => setIsTransitioning(false), 600);
+  };
+
+  const goToSlide = (index:any) => {
+    if (index === currentIndex || isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentIndex(index);
+    setTimeout(() => setIsTransitioning(false), 600);
+  };
+
+  const getCardStyle = (position:any) => {
+    const baseStyle = "transition-all duration-700 ease-in-out transform";
+    
+    switch(position) {
+      case -1: // Left card
+        return `${baseStyle} w-72 scale-95 opacity-75 z-10 -translate-x-4`;
+      case 0: // Center card
+        return `${baseStyle} w-80 scale-105 z-20 -translate-y-8 shadow-2xl`;
+      case 1: // Right card
+        return `${baseStyle} w-72 scale-95 opacity-75 z-10 translate-x-4`;
+      default:
+        return `${baseStyle} w-72 scale-90 opacity-0 z-0`;
+    }
   };
 
   const getVisibleCards = () => {
     const cards = [];
-    for (let i = 0; i < 3; i++) {
-      const index = (currentIndex - 1 + i + features.length) % features.length;
-      cards.push({ ...features[index], position: i });
+    
+    // Get the three visible cards (left, center, right)
+    for (let i = -1; i <= 1; i++) {
+      const index = (currentIndex + i + features.length) % features.length;
+      cards.push({
+        ...features[index],
+        position: i,
+        key: `${features[index].id}-${currentIndex}-${i}`
+      });
     }
+    
     return cards;
   };
 
@@ -122,22 +180,20 @@ export function Features() {
         {/* Main Features Carousel */}
         <div className="relative mb-20 px-4">
           <div
-            className="flex justify-center items-end gap-8 h-96"
+            className="flex justify-center items-end gap-8 h-96 overflow-hidden"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            {getVisibleCards().map((feature, idx) => {
-              const isCenter = idx === 1;
+            {getVisibleCards().map((feature) => {
+              const isCenter = feature.position === 0;
               return (
                 <div
-                  key={`${feature.title}-${idx}`}
-                  className={`transition-all duration-700 ease-in-out ${isCenter
-                      ? 'w-80 transform -translate-y-8 scale-105 z-20'
-                      : 'w-72 scale-95 opacity-75 z-10'
-                    }`}
+                  key={feature.key}
+                  className={getCardStyle(feature.position)}
                 >
-                  <div className={`group p-6 bg-white rounded-2xl border border-gray-200 hover:border-gray-300 h-full ${isCenter ? 'shadow-2xl' : 'shadow-lg hover:shadow-xl'
-                    } transition-all duration-300`}>
+                  <div className={`group p-6 bg-white rounded-2xl border border-gray-200 hover:border-gray-300 h-full ${
+                    isCenter ? 'shadow-2xl' : 'shadow-lg hover:shadow-xl'
+                  } transition-all duration-300`}>
                     <div className={`w-14 h-14 rounded-xl ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                       <feature.icon className="w-7 h-7" />
                     </div>
@@ -172,7 +228,10 @@ export function Features() {
           {/* Navigation Buttons */}
           <button
             onClick={goToPrevious}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 z-30"
+            disabled={isTransitioning}
+            className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 z-30 ${
+              isTransitioning ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
             aria-label="Previous features"
           >
             <ChevronLeft className="w-6 h-6" />
@@ -180,26 +239,41 @@ export function Features() {
 
           <button
             onClick={goToNext}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 z-30"
+            disabled={isTransitioning}
+            className={`absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-gray-600 hover:text-gray-900 transition-all duration-300 hover:scale-110 z-30 ${
+              isTransitioning ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
             aria-label="Next features"
           >
             <ChevronRight className="w-6 h-6" />
           </button>
 
-          {/* Dots Indicator */}
+          {/* Dots Indicator with Progress */}
           <div className="flex justify-center mt-8 space-x-2">
             {features.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${index === currentIndex
-                    ? 'bg-blue-600 w-6'
-                    : 'bg-gray-300 hover:bg-gray-400'
-                  }`}
+                onClick={() => goToSlide(index)}
+                disabled={isTransitioning}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  index === currentIndex
+                    ? 'bg-blue-600 w-8'
+                    : 'bg-gray-300 hover:bg-gray-400 w-2'
+                } ${isTransitioning ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}
           </div>
+
+          {/* Auto-scroll indicator */}
+          {!isHovered && (
+            <div className="flex justify-center mt-4">
+              <div className="text-xs text-gray-400 flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                Auto-scrolling • Hover to pause
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Advanced Features Section */}

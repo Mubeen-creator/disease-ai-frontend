@@ -62,7 +62,7 @@ export function Header({ showAuthButtons = true }: HeaderProps) {
                 Profile
               </Button>
             </Link>
-            <Link href="/dashboard/settings" prefetch={false}>
+            {/* <Link href="/dashboard/settings" prefetch={false}>
               <Button 
                 variant="ghost" 
                 className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200 font-medium"
@@ -70,7 +70,7 @@ export function Header({ showAuthButtons = true }: HeaderProps) {
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
               </Button>
-            </Link>
+            </Link> */}
             <Button 
               onClick={logout} 
               className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-medium"
@@ -167,7 +167,7 @@ export function Header({ showAuthButtons = true }: HeaderProps) {
                   </Button>
                 </Link>
                 
-                <Link href="/dashboard/settings" prefetch={false} onClick={closeMobileMenu}>
+                {/* <Link href="/dashboard/settings" prefetch={false} onClick={closeMobileMenu}>
                   <Button 
                     variant="ghost" 
                     className="w-full justify-start text-left h-12 hover:bg-gray-100 transition-all duration-200"
@@ -175,7 +175,7 @@ export function Header({ showAuthButtons = true }: HeaderProps) {
                     <Settings className="h-5 w-5 mr-3 text-gray-500" />
                     App Settings
                   </Button>
-                </Link>
+                </Link> */}
                 
                 <div className="pt-4 border-t">
                   <Button 
