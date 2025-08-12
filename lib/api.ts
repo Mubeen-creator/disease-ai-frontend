@@ -53,9 +53,9 @@ class ApiClient {
     return this.handleResponse<{ message: string }>(response);
   }
 
-  async sendMessage(message: string): Promise<{ response: string; session_id?: string }> {
-    const session_id = localStorage.getItem('session_id');
-    const payload = session_id ? { query: message, session_id } : { query: message };
+  async sendMessage(message: string, sessionId?: string): Promise<{ response: string; session_id: string }> {
+    const currentSessionId = sessionId || localStorage.getItem('session_id');
+    const payload = currentSessionId ? { query: message, session_id: currentSessionId } : { query: message };
     const response = await fetch(`${API_BASE_URL}/ask`, {
       method: 'POST',
       headers: this.getAuthHeaders(),
@@ -66,7 +66,23 @@ class ApiClient {
     if (result.session_id) {
       localStorage.setItem('session_id', result.session_id);
     }
-    return { response: result.answer };
+    return { response: result.answer, session_id: result.session_id };
+  }
+
+  async getSessions() {
+    const response = await fetch(`${API_BASE_URL}/sessions`, {
+      headers: this.getAuthHeaders(),
+    });
+    
+    return this.handleResponse<Array<{ session_id: string; last_activity: string }>>(response);
+  }
+
+  async getSessionMessages(sessionId: string) {
+    const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}`, {
+      headers: this.getAuthHeaders(),
+    });
+    
+    return this.handleResponse<Array<{ query: string; answer: string; timestamp: string; role: string }>>(response);
   }
 
   async getProfile() {

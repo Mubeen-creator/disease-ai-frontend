@@ -8,15 +8,13 @@ import { Send, Loader2, Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 import { Message } from '@/types';
 import { apiClient } from '@/lib/api';
 
-export function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      content: "Hello! I'm your AI medical assistant. I can help you understand symptoms, provide information about diseases, and suggest treatments. Please describe your symptoms or ask me about any medical condition you'd like to know more about.\n\nRemember: This is for educational purposes only and should not replace professional medical advice.",
-      role: 'assistant',
-      timestamp: new Date(),
-    },
-  ]);
+interface ChatInterfaceProps {
+  sessionId: string | null;
+  onSessionUpdate?: (sessionId: string) => void;
+}
+
+export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps) {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [typingMessageId, setTypingMessageId] = useState<string | null>(null);
@@ -34,6 +32,74 @@ export function ChatInterface() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Load session messages when sessionId changes
+  useEffect(() => {
+    if (sessionId) {
+      loadSessionMessages(sessionId);
+    } else {
+      // New chat - show welcome message
+      setMessages([{
+        id: 'welcome',
+        content: "Hello! I'm your AI medical assistant. I can help you understand symptoms, provide information about diseases, and suggest treatments. Please describe your symptoms or ask me about any medical condition you'd like to know more about.\n\nRemember: This is for educational purposes only and should not replace professional medical advice.",
+        role: 'assistant',
+        timestamp: new Date(),
+      }]);
+    }
+  }, [sessionId]);
+
+  const loadSessionMessages = async (sessionId: string) => {
+    try {
+      const sessionMessages = await apiClient.getSessionMessages(sessionId);
+      const formattedMessages: Message[] = [];
+      
+      // Group messages by query-answer pairs
+      const messageMap = new Map();
+      sessionMessages.forEach(msg => {
+        if (msg.role === 'user') {
+          messageMap.set(msg.timestamp, { user: msg, assistant: null });
+        } else if (msg.role === 'assistant') {
+          // Find the corresponding user message
+          const userEntry = Array.from(messageMap.values()).find(entry => 
+            entry.user && !entry.assistant && entry.user.query === msg.query
+          );
+          if (userEntry) {
+            userEntry.assistant = msg;
+          }
+        }
+      });
+
+      // Convert to Message format
+      Array.from(messageMap.values()).forEach((entry, index) => {
+        if (entry.user) {
+          formattedMessages.push({
+            id: `user-${index}`,
+            content: entry.user.query,
+            role: 'user',
+            timestamp: new Date(entry.user.timestamp),
+          });
+        }
+        if (entry.assistant) {
+          formattedMessages.push({
+            id: `assistant-${index}`,
+            content: entry.assistant.answer,
+            role: 'assistant',
+            timestamp: new Date(entry.assistant.timestamp),
+          });
+        }
+      });
+
+      setMessages(formattedMessages);
+    } catch (error) {
+      console.error('Failed to load session messages:', error);
+      setMessages([{
+        id: 'error',
+        content: "Sorry, I couldn't load the chat history. Let's start fresh!",
+        role: 'assistant',
+        timestamp: new Date(),
+      }]);
+    }
+  };
 
   // Initialize speech recognition
   useEffect(() => {
@@ -180,8 +246,13 @@ export function ChatInterface() {
     setIsLoading(true);
 
     try {
-      const response = await apiClient.sendMessage(inputValue);
+      const response = await apiClient.sendMessage(inputValue, sessionId || undefined);
       const messageId = (Date.now() + 1).toString();
+      
+      // If this was a new chat, notify parent about the new session
+      if (!sessionId && response.session_id && onSessionUpdate) {
+        onSessionUpdate(response.session_id);
+      }
       
       // Use typewriter effect for AI response
       typewriterEffect(response.response, messageId);
