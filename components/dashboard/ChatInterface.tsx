@@ -19,6 +19,7 @@ export function ChatInterface() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [typingMessageId, setTypingMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -28,6 +29,40 @@ export function ChatInterface() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Typewriter effect function
+  const typewriterEffect = (text: string, messageId: string) => {
+    setTypingMessageId(messageId);
+    let currentIndex = 0;
+    
+    // Add empty message first
+    const emptyMessage: Message = {
+      id: messageId,
+      content: '',
+      role: 'assistant',
+      timestamp: new Date(),
+    };
+    
+    setMessages(prev => [...prev, emptyMessage]);
+    
+    const typeInterval = setInterval(() => {
+      if (currentIndex < text.length) {
+        setMessages(prev => 
+          prev.map(msg => 
+            msg.id === messageId 
+              ? { ...msg, content: text.slice(0, currentIndex + 1) }
+              : msg
+          )
+        );
+        currentIndex++;
+      } else {
+        clearInterval(typeInterval);
+        setTypingMessageId(null);
+      }
+    }, 20); // Adjust speed here (lower = faster)
+    
+    return () => clearInterval(typeInterval);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,33 +81,25 @@ export function ChatInterface() {
 
     try {
       const response = await apiClient.sendMessage(inputValue);
+      const messageId = (Date.now() + 1).toString();
       
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: response.response,
-        role: 'assistant',
-        timestamp: new Date(),
-      };
-      
-      setMessages(prev => [...prev, aiMessage]);
+      // Use typewriter effect for AI response
+      typewriterEffect(response.response, messageId);
     } catch (error: any) {
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: "I apologize, but I'm having trouble processing your request right now. Please try again later, or contact support if the problem persists.",
-        role: 'assistant',
-        timestamp: new Date(),
-      };
+      const errorMessageId = (Date.now() + 1).toString();
+      const errorText = "I apologize, but I'm having trouble processing your request right now. Please try again later, or contact support if the problem persists.";
       
-      setMessages(prev => [...prev, errorMessage]);
+      // Use typewriter effect for error message too
+      typewriterEffect(errorText, errorMessageId);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-screen">
       {/* Chat messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         {messages.map((message) => (
           <MessageBubble key={message.id} message={message} />
         ))}
