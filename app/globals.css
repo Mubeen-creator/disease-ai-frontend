@@ -166,6 +166,28 @@
     color: #6b7280 !important;
   }
   
+  /* Remove all input borders and focus rings */
+  input:focus, textarea:focus {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    ring: none !important;
+  }
+  
+  /* Specifically target the chat input */
+  .chat-input {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  
+  .chat-input:focus {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    ring: none !important;
+  }
+  
   /* Smooth Animations */
   .smooth-transition {
     @apply transition-all duration-300 ease-in-out;

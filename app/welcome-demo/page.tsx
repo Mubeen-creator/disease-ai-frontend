@@ -47,71 +47,39 @@ export default function WelcomeDemoPage() {
           {/* After - New Design */}
           <Card className="enhanced-card">
             <CardHeader>
-              <CardTitle className="high-contrast-text text-green-600">✅ After: Clean Layout</CardTitle>
+              <CardTitle className="high-contrast-text text-green-600">✅ After: Ultra Professional</CardTitle>
               <CardDescription className="text-gray-700 font-medium">
-                Streamlined design that fits in one screen
+                Minimal, clean design with professional typography
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="bg-gradient-to-br from-gray-50 via-white to-blue-50 rounded-lg p-6 min-h-96">
-                {/* New Welcome Screen Preview */}
-                <div className="text-center">
-                  {/* Logo */}
-                  <div className="w-20 h-20 mx-auto mb-6 relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-pulse opacity-20"></div>
-                    <div className="absolute inset-2 bg-gradient-to-r from-blue-600 to-purple-700 rounded-full flex items-center justify-center shadow-xl">
-                      <img src="/logo2.png" alt="MedAI" className="w-10 h-10 object-contain" />
+              <div className="bg-white rounded-lg p-8 min-h-80 flex items-center justify-center border border-gray-100">
+                {/* Ultra Professional Welcome Screen Preview */}
+                <div className="text-center max-w-lg">
+                  <div className="space-y-6">
+                    {/* Main Heading */}
+                    <div className="space-y-3">
+                      <h2 className="text-2xl font-light text-gray-900 tracking-tight">
+                        Medical AI Assistant
+                      </h2>
+                      <p className="text-sm text-gray-600 font-normal leading-relaxed">
+                        Ask questions about symptoms, treatments, or medical conditions
+                      </p>
                     </div>
-                  </div>
-                  
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-3">
-                    AI Medical Assistant
-                  </h2>
-                  
-                  <p className="text-sm text-gray-700 font-medium mb-6 leading-relaxed">
-                    Your intelligent healthcare companion
-                  </p>
 
-                  {/* Horizontal feature highlights */}
-                  <div className="flex flex-wrap justify-center gap-4 mb-6 text-xs">
-                    <div className="flex items-center gap-1">
-                      <div className="w-5 h-5 bg-gradient-to-br from-blue-100 to-blue-200 rounded flex items-center justify-center">
-                        <span className="text-xs">🩺</span>
-                      </div>
-                      <span className="font-semibold text-gray-600">Symptoms</span>
+                    {/* Simple capabilities */}
+                    <div className="space-y-2 text-gray-500">
+                      <p className="text-xs font-medium">
+                        Symptom Analysis • Treatment Information • Health Education
+                      </p>
                     </div>
-                    
-                    <div className="flex items-center gap-1">
-                      <div className="w-5 h-5 bg-gradient-to-br from-green-100 to-green-200 rounded flex items-center justify-center">
-                        <span className="text-xs">💊</span>
-                      </div>
-                      <span className="font-semibold text-gray-600">Treatment</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-1">
-                      <div className="w-5 h-5 bg-gradient-to-br from-purple-100 to-purple-200 rounded flex items-center justify-center">
-                        <span className="text-xs">🏥</span>
-                      </div>
-                      <span className="font-semibold text-gray-600">Education</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-1">
-                      <div className="w-5 h-5 bg-gradient-to-br from-red-100 to-red-200 rounded flex items-center justify-center">
-                        <span className="text-xs">🎤</span>
-                      </div>
-                      <span className="font-semibold text-gray-600">Voice</span>
-                    </div>
-                  </div>
 
-                  {/* Call to action */}
-                  <p className="text-xs text-gray-600 font-medium mb-3">
-                    Start by typing your question below
-                  </p>
-
-                  {/* Compact disclaimer */}
-                  <div className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 border border-amber-200 rounded-full text-amber-800 text-xs font-medium">
-                    <span className="text-amber-600">⚠️</span>
-                    <span>Educational purposes only</span>
+                    {/* Minimal disclaimer */}
+                    <div className="pt-3 border-t border-gray-100">
+                      <p className="text-xs text-gray-500 font-medium">
+                        Educational information only. Consult healthcare professionals for medical advice.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -167,23 +135,27 @@ export default function WelcomeDemoPage() {
                 {/* Improvements List */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-3">
-                    <h3 className="font-bold text-gray-900">Welcome Screen Improvements:</h3>
+                    <h3 className="font-bold text-gray-900">Ultra Professional Design:</h3>
                     <ul className="space-y-2 text-sm text-gray-700">
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span>Removed large cards to save vertical space</span>
+                        <span>Removed all icons and visual clutter</span>
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span>Horizontal feature layout</span>
+                        <span>Clean typography with proper hierarchy</span>
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span>Compact disclaimer design</span>
+                        <span>Minimal content that fits in viewport</span>
                       </li>
                       <li className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span>No scrollbars in welcome screen</span>
+                        <span>Professional spacing and layout</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span>No logo or branding distractions</span>
                       </li>
                     </ul>
                   </div>
