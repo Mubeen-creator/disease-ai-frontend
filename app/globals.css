@@ -154,6 +154,16 @@
     @apply transition-all duration-200 ease-in-out;
     @apply focus:shadow-lg focus:shadow-primary/10;
     @apply hover:border-primary/30;
+    @apply text-gray-900;
+  }
+  
+  /* Input Text Contrast Fix */
+  input, textarea {
+    color: #111827 !important;
+  }
+  
+  input::placeholder, textarea::placeholder {
+    color: #6b7280 !important;
   }
   
   /* Smooth Animations */
@@ -219,5 +229,67 @@
   
   .animate-gradient-x {
     animation: gradient-x 3s ease infinite;
+  }
+  
+  /* Voice Animation Effects */
+  @keyframes voice-wave {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(1.5); }
+  }
+  
+  .voice-wave {
+    animation: voice-wave 0.6s ease-in-out infinite;
+  }
+  
+  .voice-wave:nth-child(2) { animation-delay: 0.1s; }
+  .voice-wave:nth-child(3) { animation-delay: 0.2s; }
+  .voice-wave:nth-child(4) { animation-delay: 0.3s; }
+  
+  /* Typing Indicator Animation */
+  @keyframes typing-dot {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-10px); }
+  }
+  
+  .typing-dot {
+    animation: typing-dot 1.4s ease-in-out infinite;
+  }
+  
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  
+  /* Professional Glow Effects */
+  .professional-glow {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.15), 0 0 40px rgba(59, 130, 246, 0.1);
+  }
+  
+  .professional-glow:hover {
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.25), 0 0 60px rgba(59, 130, 246, 0.15);
+  }
+  
+  /* Message Bubble Animations */
+  @keyframes message-slide-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  
+  .message-slide-in {
+    animation: message-slide-in 0.4s ease-out;
+  }
+  
+  /* Speaking Animation */
+  @keyframes speaking-pulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.1); }
+  }
+  
+  .speaking-pulse {
+    animation: speaking-pulse 1s ease-in-out infinite;
   }
 }
