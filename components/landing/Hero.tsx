@@ -135,14 +135,14 @@ export function Hero() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Lightning Fast Card */}
-            <div className="group relative overflow-hidden bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 p-8 border border-gray-100">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
+            <div className="group relative overflow-hidden bg-gradient-to-br from-white to-blue-50 rounded-3xl shadow-xl hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 transform hover:-translate-y-2 p-8 border border-blue-100 hover:border-blue-200">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg"></div>
               <div className="relative z-10">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Zap className="w-10 h-10 text-blue-600" />
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-200 to-blue-300 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg group-hover:shadow-xl">
+                  <Zap className="w-10 h-10 text-blue-700 drop-shadow-sm" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Lightning Fast</h3>
-                <p className="text-gray-600 leading-relaxed">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-blue-700 transition-colors duration-300">Lightning Fast</h3>
+                <p className="text-gray-700 leading-relaxed font-medium">
                   Get instant medical insights powered by advanced AI algorithms. No waiting, no delays - just immediate, accurate responses to your health questions.
                 </p>
               </div>
@@ -150,14 +150,14 @@ export function Hero() {
             </div>
             
             {/* AI-Powered Card */}
-            <div className="group relative overflow-hidden bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 p-8 border border-gray-100">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-green-600"></div>
+            <div className="group relative overflow-hidden bg-gradient-to-br from-white to-green-50 rounded-3xl shadow-xl hover:shadow-2xl hover:shadow-green-500/20 transition-all duration-500 transform hover:-translate-y-2 p-8 border border-green-100 hover:border-green-200">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-500 to-green-600 shadow-lg"></div>
               <div className="relative z-10">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Bot className="w-10 h-10 text-green-600" />
+                <div className="w-20 h-20 bg-gradient-to-br from-green-200 to-green-300 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg group-hover:shadow-xl">
+                  <Bot className="w-10 h-10 text-green-700 drop-shadow-sm" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">AI-Powered</h3>
-                <p className="text-gray-600 leading-relaxed">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-green-700 transition-colors duration-300">AI-Powered</h3>
+                <p className="text-gray-700 leading-relaxed font-medium">
                   Leverage cutting-edge artificial intelligence trained on vast medical databases to provide comprehensive, evidence-based health information.
                 </p>
               </div>
@@ -165,14 +165,14 @@ export function Hero() {
             </div>
             
             {/* Secure & Private Card */}
-            <div className="group relative overflow-hidden bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 p-8 border border-gray-100">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-purple-600"></div>
+            <div className="group relative overflow-hidden bg-gradient-to-br from-white to-purple-50 rounded-3xl shadow-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-500 transform hover:-translate-y-2 p-8 border border-purple-100 hover:border-purple-200">
+              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 to-purple-600 shadow-lg"></div>
               <div className="relative z-10">
-                <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Shield className="w-10 h-10 text-purple-600" />
+                <div className="w-20 h-20 bg-gradient-to-br from-purple-200 to-purple-300 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg group-hover:shadow-xl">
+                  <Shield className="w-10 h-10 text-purple-700 drop-shadow-sm" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Secure & Private</h3>
-                <p className="text-gray-600 leading-relaxed">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-purple-700 transition-colors duration-300">Secure & Private</h3>
+                <p className="text-gray-700 leading-relaxed font-medium">
                   Your health information is protected with enterprise-grade security. Complete privacy and confidentiality guaranteed at every interaction.
                 </p>
               </div>

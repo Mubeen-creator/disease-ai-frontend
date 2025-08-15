@@ -38,23 +38,23 @@ export function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
-              className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 relative"
+              className="bg-gradient-to-br from-white to-gray-50 p-8 rounded-2xl shadow-lg hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 relative border border-gray-200 hover:border-primary/20 hover:transform hover:-translate-y-1 group"
             >
-              <Quote className="absolute top-6 right-6 w-8 h-8 text-blue-200" />
+              <Quote className="absolute top-6 right-6 w-8 h-8 text-blue-300 group-hover:text-blue-400 transition-colors duration-300 drop-shadow-sm" />
               
               <div className="flex items-center mb-4">
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                  <Star key={i} className="w-5 h-5 fill-yellow-500 text-yellow-500 drop-shadow-sm" />
                 ))}
               </div>
               
-              <p className="text-gray-700 mb-6 leading-relaxed italic">
+              <p className="text-gray-800 mb-6 leading-relaxed italic font-medium">
                 "{testimonial.content}"
               </p>
               
               <div>
-                <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                <div className="text-gray-600 text-sm">{testimonial.role}</div>
+                <div className="font-bold text-gray-900">{testimonial.name}</div>
+                <div className="text-gray-700 text-sm font-medium">{testimonial.role}</div>
               </div>
             </div>
           ))}

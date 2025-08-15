@@ -7,7 +7,8 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Settings, Bell, Shield, Trash2, Download } from 'lucide-react';
+import { Settings, Bell, Shield, Trash2, Download, Palette } from 'lucide-react';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 export default function SettingsPage() {
   const [notifications, setNotifications] = useState({
@@ -21,19 +22,19 @@ export default function SettingsPage() {
   });
 
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="bg-white border-b border-gray-200 p-4">
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600">Manage your account preferences and privacy settings</p>
+    <div className="h-full overflow-y-auto custom-scrollbar">
+      <div className="bg-gradient-to-r from-primary/5 to-accent/5 border-b border-border p-6">
+        <h1 className="text-3xl font-bold text-foreground">Settings</h1>
+        <p className="text-muted-foreground mt-1">Manage your account preferences and privacy settings</p>
       </div>
       
       <div className="p-6 space-y-6">
         <div className="max-w-2xl mx-auto space-y-6">
           {/* Notifications */}
-          <Card>
+          <Card className="smooth-transition hover:shadow-lg hover:shadow-primary/5">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Bell className="h-5 w-5" />
+                <Bell className="h-5 w-5 text-primary" />
                 Notifications
               </CardTitle>
               <CardDescription>
@@ -87,10 +88,10 @@ export default function SettingsPage() {
           </Card>
 
           {/* Privacy */}
-          <Card>
+          <Card className="smooth-transition hover:shadow-lg hover:shadow-primary/5">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
+                <Shield className="h-5 w-5 text-primary" />
                 Privacy & Data
               </CardTitle>
               <CardDescription>
@@ -129,10 +130,10 @@ export default function SettingsPage() {
           </Card>
 
           {/* Data Management */}
-          <Card>
+          <Card className="smooth-transition hover:shadow-lg hover:shadow-primary/5">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
+                <Settings className="h-5 w-5 text-primary" />
                 Data Management
               </CardTitle>
               <CardDescription>

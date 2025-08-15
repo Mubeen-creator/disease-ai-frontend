@@ -140,7 +140,7 @@ export function SessionManager({ currentSessionId, onSessionSelect, onNewChat, r
       </div>
 
       {/* Sessions List */}
-      <div className="flex-1 overflow-y-auto p-2">
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
         {isLoading ? (
           <div className="text-center text-gray-400 mt-4">Loading...</div>
         ) : sessions.length === 0 ? (

@@ -239,7 +239,7 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
   return (
     <div className="h-screen flex flex-col relative">
       {/* Chat messages area - takes all available space */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 pr-20">
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4 pr-20">
         {messages.length === 0 && !isLoading ? (
           // Welcome Screen - Centered like Claude.ai/OpenAI
           <div className="flex items-center justify-center h-full">

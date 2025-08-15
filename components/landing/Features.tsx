@@ -191,26 +191,26 @@ export function Features() {
                   key={feature.key}
                   className={getCardStyle(feature.position)}
                 >
-                  <div className={`group p-6 bg-white rounded-2xl border border-gray-200 hover:border-gray-300 h-full ${
-                    isCenter ? 'shadow-2xl' : 'shadow-lg hover:shadow-xl'
-                  } transition-all duration-300`}>
-                    <div className={`w-14 h-14 rounded-xl ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                      <feature.icon className="w-7 h-7" />
+                  <div className={`group p-6 bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-200 hover:border-primary/30 h-full ${
+                    isCenter ? 'shadow-2xl shadow-primary/10 bg-gradient-to-br from-primary/5 to-white' : 'shadow-lg hover:shadow-xl hover:shadow-primary/5'
+                  } transition-all duration-300 hover:transform hover:-translate-y-1`}>
+                    <div className={`w-14 h-14 rounded-xl ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-all duration-300 shadow-lg group-hover:shadow-xl`}>
+                      <feature.icon className="w-7 h-7 drop-shadow-sm" />
                     </div>
 
-                    <h3 className={`font-semibold text-gray-900 mb-3 ${isCenter ? 'text-2xl' : 'text-xl'}`}>
+                    <h3 className={`font-bold text-gray-900 mb-3 ${isCenter ? 'text-2xl' : 'text-xl'} group-hover:text-primary transition-colors duration-300`}>
                       {feature.title}
                     </h3>
 
-                    <p className={`text-gray-600 leading-relaxed mb-4 ${isCenter ? 'text-base' : 'text-sm'}`}>
+                    <p className={`text-gray-700 leading-relaxed mb-4 ${isCenter ? 'text-base font-medium' : 'text-sm'}`}>
                       {feature.description}
                     </p>
 
                     <div className="space-y-2">
                       {feature.details.slice(0, isCenter ? 4 : 2).map((detail, detailIndex) => (
-                        <div key={detailIndex} className="flex items-center text-sm text-gray-500">
-                          <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
-                          <span className="text-xs">{detail}</span>
+                        <div key={detailIndex} className="flex items-center text-sm text-gray-600">
+                          <CheckCircle className="w-4 h-4 text-green-600 mr-2 flex-shrink-0 drop-shadow-sm" />
+                          <span className="text-xs font-medium">{detail}</span>
                         </div>
                       ))}
                       {!isCenter && feature.details.length > 2 && (
@@ -277,7 +277,7 @@ export function Features() {
         </div>
 
         {/* Advanced Features Section */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl p-8 md:p-12">
+        <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 rounded-3xl p-8 md:p-12 border border-blue-100 shadow-xl">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold text-gray-900 mb-4">
               Advanced AI Technology
@@ -289,19 +289,19 @@ export function Features() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {advancedFeatures.map((feature, index) => (
-              <div key={index} className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:transform hover:-translate-y-2">
+              <div key={index} className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:-translate-y-2 border border-gray-100 hover:border-primary/20 group">
                 <div className="flex items-center mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mr-3">
-                    <feature.icon className="w-5 h-5 text-white" />
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mr-3 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300">
+                    <feature.icon className="w-5 h-5 text-white drop-shadow-sm" />
                   </div>
-                  <span className="text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                  <span className="text-xs font-bold text-blue-700 bg-blue-100 px-3 py-1 rounded-full border border-blue-200 shadow-sm">
                     {feature.highlight}
                   </span>
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-3">
+                <h4 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors duration-300">
                   {feature.title}
                 </h4>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <p className="text-gray-700 text-sm leading-relaxed font-medium">
                   {feature.description}
                 </p>
               </div>
