@@ -6,22 +6,64 @@ class ApiClient {
     const token = localStorage.getItem('access_token');
     return {
       'Content-Type': 'application/json',
+      'Accept': 'application/json',
       ...(token && { Authorization: `Bearer ${token}` }),
     };
   }
 
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: 'Network error' }));
-      throw { message: error.message || 'Something went wrong', status: response.status };
+      const contentType = response.headers.get('content-type');
+      let error;
+      
+      if (contentType && contentType.includes('application/json')) {
+        error = await response.json().catch(() => ({ message: 'Network error' }));
+      } else {
+        // Handle HTML responses (like from Gradio interface)
+        const text = await response.text().catch(() => 'Network error');
+        if (text.includes('<!doctype') || text.includes('<html')) {
+          error = { 
+            message: 'API endpoint not accessible. The backend may be configured incorrectly on Hugging Face Spaces.',
+            details: 'The server is returning HTML instead of JSON. Please check the deployment configuration.'
+          };
+        } else {
+          error = { message: text || 'Something went wrong' };
+        }
+      }
+      
+      throw { 
+        message: error.message || 'Something went wrong', 
+        details: error.details,
+        status: response.status 
+      };
     }
-    return response.json();
+    
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return response.json();
+    } else {
+      // Handle non-JSON responses
+      const text = await response.text();
+      if (text.includes('<!doctype') || text.includes('<html')) {
+        throw { 
+          message: 'API endpoint not accessible. The backend is serving HTML instead of JSON.',
+          details: 'Please check the Hugging Face Spaces configuration.',
+          status: response.status 
+        };
+      }
+      return text as any;
+    }
   }
 
   async login(email: string, password: string) {
     const response = await fetch(`${API_BASE_URL}/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      mode: 'cors',
+      credentials: 'include',
       body: JSON.stringify({ email, password }),
     });
     
@@ -33,7 +75,12 @@ class ApiClient {
   async signup(fullName: string, email: string, password: string, confirmPassword: string) {
     const response = await fetch(`${API_BASE_URL}/signup`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      mode: 'cors',
+      credentials: 'include',
       body: JSON.stringify({ fullName, email, password, confirmPassword }),
     });
     
@@ -59,6 +106,8 @@ class ApiClient {
     const response = await fetch(`${API_BASE_URL}/ask`, {
       method: 'POST',
       headers: this.getAuthHeaders(),
+      mode: 'cors',
+      credentials: 'include',
       body: JSON.stringify(payload),
     });
     
@@ -72,6 +121,8 @@ class ApiClient {
   async getSessions() {
     const response = await fetch(`${API_BASE_URL}/sessions`, {
       headers: this.getAuthHeaders(),
+      mode: 'cors',
+      credentials: 'include',
     });
     
     return this.handleResponse<Array<{ session_id: string; last_activity: string }>>(response);
@@ -80,6 +131,8 @@ class ApiClient {
   async getSessionMessages(sessionId: string) {
     const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}`, {
       headers: this.getAuthHeaders(),
+      mode: 'cors',
+      credentials: 'include',
     });
     
     return this.handleResponse<Array<{ content: string; query?: string; answer?: string; timestamp: string; role: string }>>(response);
@@ -89,6 +142,8 @@ class ApiClient {
     const response = await fetch(`${API_BASE_URL}/sessions/${sessionId}`, {
       method: 'DELETE',
       headers: this.getAuthHeaders(),
+      mode: 'cors',
+      credentials: 'include',
     });
     
     return this.handleResponse<{ message: string }>(response);
@@ -97,6 +152,8 @@ class ApiClient {
   async getProfile() {
     const response = await fetch(`${API_BASE_URL}/me`, {
       headers: this.getAuthHeaders(),
+      mode: 'cors',
+      credentials: 'include',
     });
     
     return this.handleResponse<any>(response);
