@@ -22,7 +22,7 @@ import {
 export default function DocsPage() {
   const [isVisible, setIsVisible] = useState(false);
   const [activeSection, setActiveSection] = useState("getting-started");
-  const [expandedFaq, setExpandedFaq] = useState(null);
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   useEffect(() => {
     setIsVisible(true);
