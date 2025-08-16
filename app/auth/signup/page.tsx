@@ -1,7 +1,24 @@
+"use client";
+
+import { useEffect } from "react";
+import { useAuth } from "@/app/auth/AuthContext";
 import { Header } from '@/components/common/Header';
-import { SignupForm } from '@/components/auth/SignupForm';
+import SignupForm from '@/components/auth/SignupForm';
+import { LoadingScreen } from '@/components/ui/loading';
 
 export default function SignupPage() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
+  // Don't render signup page if already authenticated (AuthContext will handle redirect)
+  if (isAuthenticated) {
+    return null;
+  }
+
   return (
     <main className="min-h-screen bg-gray-50">
       <Header showAuthButtons={false} />

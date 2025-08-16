@@ -68,7 +68,6 @@ class ApiClient {
     });
     
     const data = await this.handleResponse<{ access_token: string }>(response);
-    localStorage.setItem('access_token', data.access_token);
     return data;
   }
 
@@ -85,7 +84,6 @@ class ApiClient {
     });
     
     const data = await this.handleResponse<{ access_token: string }>(response);
-    localStorage.setItem('access_token', data.access_token);
     return data;
   }
 

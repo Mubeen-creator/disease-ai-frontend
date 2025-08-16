@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ChatDashboard } from "@/components/dashboard/ChatDashboard";
 import { useAuth } from "@/app/auth/AuthContext";
+import { LoadingScreen } from "@/components/ui/loading";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -18,11 +19,7 @@ export default function DashboardPage() {
 
   // Show loading state while checking authentication
   if (isLoading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="text-gray-600">Loading...</div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   // Don't render dashboard if not authenticated (while redirecting)

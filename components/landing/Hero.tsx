@@ -1,186 +1,236 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Bot, Shield, Zap, Play } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Play,
+  Shield,
+  Brain,
+  ChevronRight,
+  Users,
+} from "lucide-react";
 
 export function Hero() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  
-  // Medical background images (replace with your actual image URLs)
-  const slides = [
-    {
-      image: 'https://thumbs.dreamstime.com/b/i-robot-doctor-taking-care-patient-concept-futuristic-healthcare-artificial-intelligence-medicine-human-380237104.jpg', // Replace with actual medical image
-      alt: 'Modern hospital with advanced technology'
-    },
-    {
-      image: 'https://digitalsforhealth.co.uk/wp-content/uploads/2023/07/Will-robots-replace-doctors-1024x683.jpg', // Replace with actual medical image
-      alt: 'AI technology in healthcare'
-    },
-    {
-      image: 'https://www.wddty.com/wp-content/uploads/2024/05/robot-doctor.jpg', // Replace with actual medical image
-      alt: 'Medical professionals using technology'
-    },
-    {
-      image: 'https://media.istockphoto.com/id/1772875753/vector/artificial-intelligence-in-healthcare-concept.jpg?s=612x612&w=0&k=20&c=0g4N0KN2c0XVFDgn3SmAer_dHyEGw-NzyXxcIxZDDzs=', // Replace with actual medical image
-      alt: 'Digital health innovation'
-    }
-  ];
+  const router = useRouter();
+  const [isVisible, setIsVisible] = useState(false);
 
-  // Auto-slide functionality
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000); // Change slide every 5 seconds
-
-    return () => clearInterval(timer);
-  }, [slides.length]);
+    setIsVisible(true);
+  }, []);
 
   return (
-    <>
-      {/* Full-screen Hero Section with Image Slider */}
-      <section className="relative h-screen overflow-hidden">
-        {/* Background Image Slider */}
-        <div className="absolute inset-0">
-          {slides.map((slide, index) => (
+    <div className="relative bg-white overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgb(15_23_42/0.15)_1px,transparent_0)] [background-size:24px_24px]" />
+
+      {/* Main Hero */}
+      <div className="relative">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-20 pb-10 lg:pt-10 lg:pb-10">
+          <div className="text-center max-w-4xl mx-auto">
+            {/* Premium Badge */}
             <div
-              key={index}
-              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-                index === currentSlide ? 'opacity-100' : 'opacity-0'
+              className={`inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-full text-sm font-medium mb-8 transform transition-all duration-700 ${
+                isVisible
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0"
               }`}
             >
-              <img
-                src={slide.image}
-                alt={slide.alt}
-                className="w-full h-full object-cover"
-              />
+              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+              Trusted by 50,000+ Healthcare Professionals
+              <ChevronRight className="w-4 h-4 ml-1" />
             </div>
-          ))}
-        </div>
 
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/60"></div>
-        
-        {/* Animated Particles */}
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400 rounded-full opacity-60 animate-ping"></div>
-          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-green-400 rounded-full opacity-50 animate-pulse delay-1000"></div>
-          <div className="absolute bottom-1/3 left-1/6 w-3 h-3 bg-purple-400 rounded-full opacity-40 animate-bounce delay-500"></div>
-          <div className="absolute top-1/2 right-1/4 w-1.5 h-1.5 bg-blue-300 rounded-full opacity-70 animate-pulse delay-2000"></div>
-        </div>
-
-        {/* Hero Content */}
-        <div className="relative z-10 h-[80%] object-cover flex items-center justify-center mt-10">
-          <div className="container mx-auto px-6 text-center text-white">
-            {/* AI Badge */}
-            <div className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-white text-sm font-medium mb-8 hover:bg-white/15 transition-all duration-300">
-              <Bot className="w-4 h-4 mr-2" />
-              <span className="bg-gradient-to-r from-blue-300 to-green-300 bg-clip-text text-transparent">
-                AI-Powered Medical Assistant
-              </span>
+            {/* Main Headline */}
+            <div
+              className={`transform transition-all duration-700 delay-100 ${
+                isVisible
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0"
+              }`}
+            >
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 leading-[1.1] mb-6">
+                The Future of
+                <span className="block bg-gradient-to-r pb-2 from-blue-600 via-violet-600 to-cyan-600 bg-clip-text text-transparent">
+                  Medical Intelligence
+                </span>
+              </h1>
             </div>
-            
-            {/* Main Heading */}
-            <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold mb-8 leading-tight">
-              <span className="block">Your Personal</span>
-              <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-green-400 bg-clip-text text-transparent animate-gradient-x">
-                Medical AI Assistant
-              </span>
-            </h1>
-            
+
             {/* Subtitle */}
-            <p className="text-xl md:text-2xl text-gray-200 mb-12 leading-relaxed max-w-4xl mx-auto font-light">
-              Experience the future of healthcare with instant, accurate medical insights. 
-              Analyze symptoms, discover treatments, and understand diseases with the power of AI.
-            </p>
-            
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-              <Link href="/auth/signup">
-                <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-lg px-10 py-4 rounded-full shadow-2xl shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-300 group border-0 min-w-[280px]"
+            <div
+              className={`transform transition-all duration-700 delay-200 ${
+                isVisible
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0"
+              }`}
+            >
+              <p className="text-xl lg:text-2xl text-slate-600 leading-relaxed mb-10 max-w-3xl mx-auto font-light">
+                Advanced AI-powered diagnostic platform delivering instant,
+                accurate medical insights with clinical-grade precision and
+                enterprise security.
+              </p>
+            </div>
+
+            {/* CTA Section */}
+            <div
+              className={`transform transition-all duration-700 delay-300 ${
+                isVisible
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0"
+              }`}
+            >
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+                <Button
+                  onClick={() => router.push("/dashboard")}
+                  variant="outline"
+                  size="lg"
+                  className="px-8 py-4 text-lg font-semibold border-2 border-slate-200 hover:border-slate-300 text-white hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all duration-200 min-w-[180px]"
                 >
-                  <Play className="mr-3 h-5 w-5" />
-                  Start Your Consultation
-                  <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  <Play className="mr-2 h-5 w-5" />
+                  Get Started
                 </Button>
-              </Link>
-              <Link href="/docs">
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="text-lg px-10 py-4 rounded-full bg-white/10 backdrop-blur-md border-white/30 text-white hover:bg-white/20 hover:border-white/40 transition-all duration-300 min-w-[240px]"
+                <Button
+                  onClick={() => router.push("/docs")}
+                  variant="outline"
+                  size="lg"
+                  className="px-8 py-4 text-lg font-semibold border-2 border-slate-200 hover:border-slate-300 text-white hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-all duration-200 min-w-[180px]"
                 >
                   View Documentation
                 </Button>
-              </Link>
+              </div>
             </div>
           </div>
         </div>
-      </section>
 
-      {/* Separate Feature Cards Section */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 via-white to-blue-50">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Why Choose Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">AI Assistant?</span>
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Experience cutting-edge medical AI technology designed to provide accurate, reliable healthcare information.
-            </p>
-          </div>
+        {/* Dashboard Preview */}
+        <div
+          className={`mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-20 transform transition-all duration-700 delay-500 ${
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+          }`}
+        >
+          <div className="relative">
+            {/* Main Dashboard Card */}
+            <div className="bg-white rounded-3xl shadow-[0_0_80px_rgba(0,0,0,0.12)] border border-slate-200/50 overflow-hidden">
+              {/* Dashboard Header */}
+              <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 px-6 py-4 flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-lg flex items-center justify-center">
+                    <Brain className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-white font-semibold">
+                      MedAI Diagnostic Platform
+                    </div>
+                    <div className="text-slate-400 text-sm">
+                      Real-time Analysis
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                  <span className="text-emerald-400 text-sm font-medium">
+                    Live
+                  </span>
+                </div>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {/* Lightning Fast Card */}
-            <div className="group relative overflow-hidden bg-gradient-to-br from-white to-blue-50 rounded-3xl shadow-xl hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-500 transform hover:-translate-y-2 p-8 border border-blue-100 hover:border-blue-200">
-              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg"></div>
-              <div className="relative z-10">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-200 to-blue-300 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg group-hover:shadow-xl">
-                  <Zap className="w-10 h-10 text-blue-700 drop-shadow-sm" />
+              {/* Dashboard Content */}
+              <div className="p-6 bg-gradient-to-br from-slate-50 to-white">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Analysis Results */}
+                  <div className="lg:col-span-2 space-y-4">
+                    <div className="bg-white rounded-xl p-5 border border-slate-200/50 shadow-sm">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-semibold text-slate-900">
+                          Diagnostic Analysis
+                        </h3>
+                        <div className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium">
+                          Complete
+                        </div>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-600">
+                            Confidence Level
+                          </span>
+                          <span className="font-bold text-slate-900">
+                            96.8%
+                          </span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-2">
+                          <div
+                            className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full"
+                            style={{ width: "96.8%" }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl p-5 border border-slate-200/50 shadow-sm">
+                      <h4 className="font-semibold text-slate-900 mb-3">
+                        Key Findings
+                      </h4>
+                      <div className="space-y-2">
+                        {[
+                          "Primary symptoms identified",
+                          "Risk factors assessed",
+                          "Treatment options available",
+                        ].map((item, i) => (
+                          <div
+                            key={i}
+                            className="flex items-center space-x-2 text-slate-600"
+                          >
+                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                            <span className="text-sm">{item}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Stats */}
+                  <div className="space-y-4">
+                    <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200/50">
+                      <div className="text-2xl font-bold text-blue-900 mb-1">
+                        2.3s
+                      </div>
+                      <div className="text-blue-700 text-sm">Analysis Time</div>
+                    </div>
+                    <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border border-emerald-200/50">
+                      <div className="text-2xl font-bold text-emerald-900 mb-1">
+                        99.7%
+                      </div>
+                      <div className="text-emerald-700 text-sm">
+                        Accuracy Rate
+                      </div>
+                    </div>
+                    <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-4 border border-violet-200/50">
+                      <div className="text-2xl font-bold text-violet-900 mb-1">
+                        HIPAA
+                      </div>
+                      <div className="text-violet-700 text-sm">Compliant</div>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-blue-700 transition-colors duration-300">Lightning Fast</h3>
-                <p className="text-gray-700 leading-relaxed font-medium">
-                  Get instant medical insights powered by advanced AI algorithms. No waiting, no delays - just immediate, accurate responses to your health questions.
-                </p>
               </div>
-              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-blue-100 rounded-full opacity-10 group-hover:opacity-20 transition-opacity duration-300"></div>
             </div>
-            
-            {/* AI-Powered Card */}
-            <div className="group relative overflow-hidden bg-gradient-to-br from-white to-green-50 rounded-3xl shadow-xl hover:shadow-2xl hover:shadow-green-500/20 transition-all duration-500 transform hover:-translate-y-2 p-8 border border-green-100 hover:border-green-200">
-              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-500 to-green-600 shadow-lg"></div>
-              <div className="relative z-10">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-200 to-green-300 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg group-hover:shadow-xl">
-                  <Bot className="w-10 h-10 text-green-700 drop-shadow-sm" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-green-700 transition-colors duration-300">AI-Powered</h3>
-                <p className="text-gray-700 leading-relaxed font-medium">
-                  Leverage cutting-edge artificial intelligence trained on vast medical databases to provide comprehensive, evidence-based health information.
-                </p>
-              </div>
-              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-green-100 rounded-full opacity-10 group-hover:opacity-20 transition-opacity duration-300"></div>
+
+            {/* Floating Security Badge */}
+            <div className="absolute -top-4 -right-4 bg-white rounded-xl p-3 shadow-lg border border-slate-200/50">
+              <Shield className="w-6 h-6 text-emerald-600" />
             </div>
-            
-            {/* Secure & Private Card */}
-            <div className="group relative overflow-hidden bg-gradient-to-br from-white to-purple-50 rounded-3xl shadow-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-500 transform hover:-translate-y-2 p-8 border border-purple-100 hover:border-purple-200">
-              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 to-purple-600 shadow-lg"></div>
-              <div className="relative z-10">
-                <div className="w-20 h-20 bg-gradient-to-br from-purple-200 to-purple-300 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg group-hover:shadow-xl">
-                  <Shield className="w-10 h-10 text-purple-700 drop-shadow-sm" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-purple-700 transition-colors duration-300">Secure & Private</h3>
-                <p className="text-gray-700 leading-relaxed font-medium">
-                  Your health information is protected with enterprise-grade security. Complete privacy and confidentiality guaranteed at every interaction.
-                </p>
-              </div>
-              <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-purple-100 rounded-full opacity-10 group-hover:opacity-20 transition-opacity duration-300"></div>
+
+            {/* Floating Users Badge */}
+            <div className="absolute -bottom-4 -left-4 bg-white rounded-xl p-3 shadow-lg border border-slate-200/50 flex items-center space-x-2">
+              <Users className="w-5 h-5 text-blue-600" />
+              <span className="text-sm font-medium text-slate-700">
+                50K+ Users
+              </span>
             </div>
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </div>
   );
 }
