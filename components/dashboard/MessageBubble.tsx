@@ -10,6 +10,7 @@ import Image from "next/image";
 interface MessageBubbleProps {
   message: Message;
   onSpeak?: (text: string, messageId: string) => void;
+  onStopSpeaking?: () => void;
   isSpeaking?: boolean;
   speakingMessageId?: string | null;
 }
@@ -17,6 +18,7 @@ interface MessageBubbleProps {
 export function MessageBubble({
   message,
   onSpeak,
+  onStopSpeaking,
   isSpeaking = false,
   speakingMessageId,
 }: MessageBubbleProps) {
@@ -30,7 +32,9 @@ export function MessageBubble({
       messageId: message.id,
       isCurrentlySpeaking,
     });
-    if (onSpeak) {
+    if (isCurrentlySpeaking && onStopSpeaking) {
+      onStopSpeaking();
+    } else if (onSpeak) {
       onSpeak(message.content, message.id);
     }
   };
