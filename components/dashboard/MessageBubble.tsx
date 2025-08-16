@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { User, Volume2, VolumeX, Sparkles } from 'lucide-react';
-import { Message } from '@/types';
-import { cn } from '@/lib/utils';
-import ReactMarkdown from 'react-markdown';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
+import { User, Volume2, VolumeX, Sparkles } from "lucide-react";
+import { Message } from "@/types";
+import { cn } from "@/lib/utils";
+import ReactMarkdown from "react-markdown";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 interface MessageBubbleProps {
   message: Message;
@@ -18,28 +18,32 @@ export function MessageBubble({
   message,
   onSpeak,
   isSpeaking = false,
-  speakingMessageId
+  speakingMessageId,
 }: MessageBubbleProps) {
-  const isUser = message.role === 'user';
+  const isUser = message.role === "user";
   const isCurrentlySpeaking = isSpeaking && speakingMessageId === message.id;
 
   const handleSpeakClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('Speech button clicked:', { messageId: message.id, isCurrentlySpeaking });
+    console.log("Speech button clicked:", {
+      messageId: message.id,
+      isCurrentlySpeaking,
+    });
     if (onSpeak) {
       onSpeak(message.content, message.id);
     }
   };
 
   return (
-    <div className={cn(
-      "group flex gap-6 px-6 py-8 relative overflow-hidden transition-all duration-500 ease-out message-slide-in",
-      "hover:bg-gradient-to-r hover:from-transparent hover:via-blue-50/20 hover:to-transparent",
-      "before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent before:translate-x-[-100%] before:transition-transform before:duration-1000 hover:before:translate-x-[100%]",
-      isUser ? "justify-end" : "justify-start"
-    )}>
-
+    <div
+      className={cn(
+        "group flex gap-6 px-6 py-8 relative overflow-hidden transition-all duration-500 ease-out message-slide-in",
+        "hover:bg-gradient-to-r hover:from-transparent hover:via-blue-50/20 hover:to-transparent",
+        "before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent before:translate-x-[-100%] before:transition-transform before:duration-1000 hover:before:translate-x-[100%]",
+        isUser ? "justify-end" : "justify-start"
+      )}
+    >
       {!isUser && (
         <div className="relative flex-shrink-0 group">
           <div className="w-16 h-16 relative">
@@ -63,18 +67,21 @@ export function MessageBubble({
         </div>
       )}
 
-      <div className={cn(
-        "relative max-w-[70%] transition-all duration-500 ease-out group-hover:scale-[1.02]",
-        isUser ? "order-first" : ""
-      )}>
-        <div className={cn(
-          "relative rounded-3xl px-8 py-6 backdrop-blur-xl border transition-all duration-500 group-hover:scale-[1.01]",
-          "before:absolute before:inset-0 before:rounded-3xl before:p-px before:bg-gradient-to-br before:opacity-60",
-          isUser
-            ? "bg-gradient-to-br from-blue-600/95 via-blue-700/95 to-indigo-800/95 text-white shadow-2xl shadow-blue-500/30 before:from-white/20 before:via-white/10 before:to-transparent border-white/20 hover:shadow-blue-500/40"
-            : "bg-gradient-to-br from-white/95 to-gray-50/95 text-slate-800 shadow-2xl shadow-slate-200/60 before:from-slate-200/50 before:via-transparent before:to-slate-200/30 border-slate-200/60 hover:shadow-slate-300/70"
-        )}>
-
+      <div
+        className={cn(
+          "relative max-w-[70%] transition-all duration-500 ease-out group-hover:scale-[1.02]",
+          isUser ? "order-first" : ""
+        )}
+      >
+        <div
+          className={cn(
+            "relative rounded-3xl px-8 py-6 backdrop-blur-xl border transition-all duration-500 group-hover:scale-[1.01]",
+            "before:absolute before:inset-0 before:rounded-3xl before:p-px before:bg-gradient-to-br before:opacity-60",
+            isUser
+              ? "bg-gradient-to-br from-blue-600/95 via-blue-700/95 to-indigo-800/95 text-white shadow-2xl shadow-blue-500/30 before:from-white/20 before:via-white/10 before:to-transparent border-white/20 hover:shadow-blue-500/40"
+              : "bg-gradient-to-br from-white/95 to-gray-50/95 text-slate-800 shadow-2xl shadow-slate-200/60 before:from-slate-200/50 before:via-transparent before:to-slate-200/30 border-slate-200/60 hover:shadow-slate-300/70"
+          )}
+        >
           {/* Enhanced Message Content */}
           <div className="relative z-10">
             {isUser ? (
@@ -82,46 +89,54 @@ export function MessageBubble({
                 {message.content}
               </p>
             ) : (
-              <div className={cn(
-                "text-base leading-relaxed prose prose-sm max-w-none",
-                "prose-headings:text-slate-900 prose-headings:font-bold prose-headings:tracking-tight",
-                "prose-strong:text-slate-900 prose-strong:font-bold",
-                "prose-p:text-slate-800 prose-p:my-4 prose-li:text-slate-800 prose-p:font-medium",
-                "prose-code:text-indigo-800 prose-code:bg-indigo-100/80 prose-code:px-3 prose-code:py-1.5 prose-code:rounded-lg prose-code:font-mono prose-code:text-sm prose-code:font-semibold prose-code:shadow-sm",
-                "prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700/50 prose-pre:rounded-xl prose-pre:shadow-xl prose-pre:p-4",
-                "prose-blockquote:border-l-4 prose-blockquote:border-blue-400 prose-blockquote:bg-blue-50/60 prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-xl prose-blockquote:shadow-sm",
-                "prose-ul:my-4 prose-ol:my-4 prose-li:my-1"
-              )}>
+              <div
+                className={cn(
+                  "text-base leading-relaxed prose prose-sm max-w-none",
+                  "prose-headings:text-slate-900 prose-headings:font-bold prose-headings:tracking-tight",
+                  "prose-strong:text-slate-900 prose-strong:font-bold",
+                  "prose-p:text-slate-800 prose-p:my-4 prose-li:text-slate-800 prose-p:font-medium",
+                  "prose-code:text-indigo-800 prose-code:bg-indigo-100/80 prose-code:px-3 prose-code:py-1.5 prose-code:rounded-lg prose-code:font-mono prose-code:text-sm prose-code:font-semibold prose-code:shadow-sm",
+                  "prose-pre:bg-slate-900 prose-pre:border prose-pre:border-slate-700/50 prose-pre:rounded-xl prose-pre:shadow-xl prose-pre:p-4",
+                  "prose-blockquote:border-l-4 prose-blockquote:border-blue-400 prose-blockquote:bg-blue-50/60 prose-blockquote:py-3 prose-blockquote:px-5 prose-blockquote:rounded-r-xl prose-blockquote:shadow-sm",
+                  "prose-ul:my-4 prose-ol:my-4 prose-li:my-1"
+                )}
+              >
                 <ReactMarkdown>{message.content}</ReactMarkdown>
               </div>
             )}
           </div>
 
           {/* Floating Action Bar */}
-          <div className={cn(
-            "flex items-center justify-between mt-4 pt-3 relative",
-            "before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r",
-            isUser
-              ? "before:from-transparent before:via-white/30 before:to-transparent"
-              : "before:from-transparent before:via-slate-300/60 before:to-transparent"
-          )}>
+          <div
+            className={cn(
+              "flex items-center justify-between mt-4 pt-3 relative",
+              "before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r",
+              isUser
+                ? "before:from-transparent before:via-white/30 before:to-transparent"
+                : "before:from-transparent before:via-slate-300/60 before:to-transparent"
+            )}
+          >
             <div className="flex items-center gap-4">
-              <span className={cn(
-                "text-xs font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm",
-                isUser
-                  ? "text-blue-100 bg-white/15 border border-white/20"
-                  : "text-slate-600 bg-slate-100/90 border border-slate-200"
-              )}>
+              <span
+                className={cn(
+                  "text-xs font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm",
+                  isUser
+                    ? "text-blue-100 bg-white/15 border border-white/20"
+                    : "text-slate-600 bg-slate-100/90 border border-slate-200"
+                )}
+              >
                 {message.timestamp.toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: true
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
                 })}
               </span>
               {!isUser && (
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full border border-blue-200 shadow-sm">
                   <Sparkles className="w-3 h-3 text-blue-600" />
-                  <span className="font-bold text-xs text-blue-700">AI ASSISTANT</span>
+                  <span className="font-bold text-xs text-blue-700">
+                    AI ASSISTANT
+                  </span>
                 </div>
               )}
             </div>
@@ -151,10 +166,6 @@ export function MessageBubble({
                     )}
                   </div>
                 </Button>
-                {/* Speaking indicator glow */}
-                {isCurrentlySpeaking && (
-                  <div className="absolute -inset-1 bg-gradient-to-r from-red-400 to-red-600 rounded-xl blur opacity-30 animate-pulse"></div>
-                )}
               </div>
             )}
           </div>
@@ -163,11 +174,13 @@ export function MessageBubble({
 
       {isUser && (
         <div className="relative flex-shrink-0 group">
-          <div className={cn(
-            "w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110",
-            "bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 shadow-xl shadow-slate-500/30",
-            "before:absolute before:inset-0 before:rounded-2xl before:p-0.5 before:bg-gradient-to-br before:from-white/20 before:to-transparent before:opacity-0 group-hover:before:opacity-100 before:transition-opacity before:duration-300"
-          )}>
+          <div
+            className={cn(
+              "w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110",
+              "bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 shadow-xl shadow-slate-500/30",
+              "before:absolute before:inset-0 before:rounded-2xl before:p-0.5 before:bg-gradient-to-br before:from-white/20 before:to-transparent before:opacity-0 group-hover:before:opacity-100 before:transition-opacity before:duration-300"
+            )}
+          >
             <div className="relative z-10">
               <User className="w-7 h-7 text-white drop-shadow-sm" />
             </div>
