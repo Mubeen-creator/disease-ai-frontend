@@ -1,13 +1,15 @@
-import { Bot, User, Volume2, VolumeX, Sparkles } from 'lucide-react';
+'use client';
+
+import { User, Volume2, VolumeX, Sparkles } from 'lucide-react';
 import { Message } from '@/types';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 interface MessageBubbleProps {
   message: Message;
   onSpeak?: (text: string, messageId: string) => void;
-  onStopSpeaking?: () => void;
   isSpeaking?: boolean;
   speakingMessageId?: string | null;
 }
@@ -15,12 +17,20 @@ interface MessageBubbleProps {
 export function MessageBubble({
   message,
   onSpeak,
-  onStopSpeaking,
   isSpeaking = false,
   speakingMessageId
 }: MessageBubbleProps) {
   const isUser = message.role === 'user';
   const isCurrentlySpeaking = isSpeaking && speakingMessageId === message.id;
+
+  const handleSpeakClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Speech button clicked:', { messageId: message.id, isCurrentlySpeaking });
+    if (onSpeak) {
+      onSpeak(message.content, message.id);
+    }
+  };
 
   return (
     <div className={cn(
@@ -33,12 +43,14 @@ export function MessageBubble({
       {!isUser && (
         <div className="relative flex-shrink-0 group">
           <div className="w-16 h-16 relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl animate-pulse opacity-20"></div>
-            <div className="absolute inset-1 bg-gradient-to-r from-blue-600 to-purple-700 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-105 transition-transform duration-300">
-              <img
+            <div className="absolute inset-0 rounded-2xl animate-pulse opacity-20"></div>
+            <div className="absolute inset-1 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-105 transition-transform duration-300">
+              <Image
                 src="/logo2.png"
                 alt="MedAI Logo"
                 className="w-10 h-10 object-contain"
+                width={50}
+                height={50}
               />
               {isCurrentlySpeaking && (
                 <div className="absolute -top-1 -right-1 w-4 h-4">
@@ -47,15 +59,6 @@ export function MessageBubble({
                 </div>
               )}
             </div>
-            {/* Enhanced glow effect */}
-            <div className="absolute -inset-3 bg-gradient-to-r from-blue-500/20 via-purple-600/20 to-indigo-500/20 rounded-full blur-xl opacity-0 group-hover:opacity-80 transition-opacity duration-500"></div>
-            {/* Speaking animation rings */}
-            {isCurrentlySpeaking && (
-              <div className="absolute -inset-2 pointer-events-none">
-                <div className="absolute inset-0 rounded-2xl border-2 border-green-400 animate-ping opacity-40"></div>
-                <div className="absolute inset-1 rounded-2xl border-2 border-green-300 animate-ping opacity-30" style={{ animationDelay: '0.2s' }}></div>
-              </div>
-            )}
           </div>
         </div>
       )}
@@ -123,18 +126,19 @@ export function MessageBubble({
               )}
             </div>
 
-            {!isUser && onSpeak && onStopSpeaking && (
+            {!isUser && onSpeak && (
               <div className="relative">
                 <Button
-                  onClick={() => isCurrentlySpeaking ? onStopSpeaking() : onSpeak(message.content, message.id)}
+                  onClick={handleSpeakClick}
                   className={cn(
                     "h-10 w-10 p-0 rounded-xl transition-all duration-300 backdrop-blur-sm border group/btn shadow-lg",
-                    "hover:scale-110 active:scale-95 hover:shadow-xl",
+                    "hover:scale-110 active:scale-95 hover:shadow-xl cursor-pointer",
                     isCurrentlySpeaking
                       ? "bg-gradient-to-r from-red-500/20 to-red-600/20 hover:from-red-500/30 hover:to-red-600/30 text-red-600 border-red-300/50 shadow-red-500/20"
                       : "bg-gradient-to-r from-slate-100/90 to-slate-200/90 hover:from-blue-100/90 hover:to-blue-200/90 text-slate-600 border-slate-300/50 hover:text-blue-700 hover:border-blue-300/50"
                   )}
                   variant="ghost"
+                  type="button"
                 >
                   <div className="relative">
                     {isCurrentlySpeaking ? (

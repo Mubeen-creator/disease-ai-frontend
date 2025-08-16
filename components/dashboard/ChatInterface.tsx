@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MessageBubble } from './MessageBubble';
 import { Send, Loader2, Mic, MicOff } from 'lucide-react';
 import { Message } from '@/types';
 import { apiClient } from '@/lib/api';
-import { VoiceVisualizer, TypingIndicator } from '@/components/ui/voice-visualizer';
-import Link from 'next/link';
+import { TypingIndicator } from '@/components/ui/voice-visualizer';
+import Image from 'next/image';
 
 interface ChatInterfaceProps {
   sessionId: string | null;
@@ -134,48 +134,82 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
 
   // Text-to-speech functions
   const speakMessage = (text: string, messageId: string) => {
-    if ('speechSynthesis' in window) {
-      // Stop any current speech
-      speechSynthesis.cancel();
-
-      // Remove markdown formatting for speech
-      const cleanText = text.replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
-        .replace(/\*(.*?)\*/g, '$1')     // Remove italic
-        .replace(/#{1,6}\s/g, '')        // Remove headers
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links
-        .replace(/`([^`]+)`/g, '$1');    // Remove code
-
-      const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.rate = 0.9;
-      utterance.pitch = 1;
-      utterance.volume = 1;
-
-      utterance.onstart = () => {
-        setIsSpeaking(true);
-        setSpeakingMessageId(messageId);
-      };
-
-      utterance.onend = () => {
-        setIsSpeaking(false);
-        setSpeakingMessageId(null);
-      };
-
-      utterance.onerror = () => {
-        setIsSpeaking(false);
-        setSpeakingMessageId(null);
-      };
-
-      speechSynthesisRef.current = utterance;
-      speechSynthesis.speak(utterance);
+    console.log('speakMessage called:', { messageId, isSpeaking, speakingMessageId });
+    
+    if (!('speechSynthesis' in window)) {
+      console.log('Speech synthesis not supported');
+      return;
     }
+
+    // If already speaking this message, stop it
+    if (isSpeaking && speakingMessageId === messageId) {
+      console.log('Stopping current speech for same message');
+      stopSpeaking();
+      return;
+    }
+
+    // If speaking a different message, stop it first
+    if (isSpeaking) {
+      console.log('Stopping different message speech');
+      stopSpeaking();
+    }
+
+    // Clean the text for speech
+    const cleanText = text
+      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
+      .replace(/\*(.*?)\*/g, '$1')     // Remove italic
+      .replace(/#{1,6}\s/g, '')        // Remove headers
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links
+      .replace(/`([^`]+)`/g, '$1')     // Remove code
+      .replace(/\n+/g, ' ')            // Replace newlines with spaces
+      .trim();
+
+    if (!cleanText) {
+      console.log('No text to speak');
+      return;
+    }
+
+    console.log('Starting speech with cleaned text length:', cleanText.length);
+
+    // Set speaking state immediately
+    setIsSpeaking(true);
+    setSpeakingMessageId(messageId);
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 0.8;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+
+    utterance.onstart = () => {
+      console.log('Speech actually started');
+    };
+
+    utterance.onend = () => {
+      console.log('Speech ended naturally');
+      setIsSpeaking(false);
+      setSpeakingMessageId(null);
+      speechSynthesisRef.current = null;
+    };
+
+    utterance.onerror = (event) => {
+      console.log('Speech error:', event.error);
+      setIsSpeaking(false);
+      setSpeakingMessageId(null);
+      speechSynthesisRef.current = null;
+    };
+
+    speechSynthesisRef.current = utterance;
+    speechSynthesis.speak(utterance);
   };
 
   const stopSpeaking = () => {
-    if ('speechSynthesis' in window) {
+    console.log('stopSpeaking called');
+    if ('speechSynthesis' in window && speechSynthesis.speaking) {
       speechSynthesis.cancel();
-      setIsSpeaking(false);
-      setSpeakingMessageId(null);
     }
+    setIsSpeaking(false);
+    setSpeakingMessageId(null);
+    speechSynthesisRef.current = null;
   };
 
   // Typewriter effect function
@@ -311,7 +345,47 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
           {/* Enhanced Send button */}
           <div className="relative">
             <Button
-              type="submit"
+              type="button"
+              onClick={async () => {
+                console.log('Send button clicked');
+                if (!inputValue.trim() || isLoading) {
+                  console.log('Send button blocked - no input or loading');
+                  return;
+                }
+
+                const userMessage: Message = {
+                  id: Date.now().toString(),
+                  content: inputValue,
+                  role: 'user',
+                  timestamp: new Date(),
+                };
+
+                setMessages(prev => [...prev, userMessage]);
+                const currentInput = inputValue;
+                setInputValue('');
+                setIsLoading(true);
+
+                try {
+                  const response = await apiClient.sendMessage(currentInput, sessionId || undefined);
+                  const messageId = (Date.now() + 1).toString();
+
+                  // If this was a new chat, notify parent about the new session
+                  if (!sessionId && response.session_id && onSessionUpdate) {
+                    onSessionUpdate(response.session_id);
+                  }
+
+                  // Use typewriter effect for AI response
+                  typewriterEffect(response.response, messageId);
+                } catch (error: any) {
+                  const errorMessageId = (Date.now() + 1).toString();
+                  const errorText = "I apologize, but I'm having trouble processing your request right now. Please try again later, or contact support if the problem persists.";
+
+                  // Use typewriter effect for error message too
+                  typewriterEffect(errorText, errorMessageId);
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
               disabled={isLoading || !inputValue.trim()}
               size="sm"
               className={`h-12 w-12 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl relative overflow-hidden ${
@@ -341,16 +415,6 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
         {/* Enhanced Status indicators */}
         <div className="flex items-center justify-between mt-4">
           <div className="flex items-center gap-4">
-            {isListening && (
-              <div className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-red-50 to-red-100 rounded-full border border-red-200 shadow-sm">
-                <div className="relative">
-                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                  <div className="absolute inset-0 w-3 h-3 bg-red-400 rounded-full animate-ping opacity-40"></div>
-                </div>
-                <span className="text-sm font-semibold text-red-700">Listening...</span>
-                <VoiceVisualizer isActive={true} className="text-red-500" size="sm" />
-              </div>
-            )}
             {isLoading && !isListening && (
               <div className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-blue-50 to-blue-100 rounded-full border border-blue-200 shadow-sm">
                 <TypingIndicator className="text-blue-500" />
@@ -364,13 +428,6 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
               </div>
             )}
           </div>
-          
-          {/* Input character count */}
-          {inputValue && (
-            <div className="text-xs text-gray-500 font-medium">
-              {inputValue.length} characters
-            </div>
-          )}
         </div>
       </form>
     </div>
@@ -412,7 +469,6 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
                 key={message.id}
                 message={message}
                 onSpeak={speakMessage}
-                onStopSpeaking={stopSpeaking}
                 isSpeaking={isSpeaking}
                 speakingMessageId={speakingMessageId}
               />
@@ -423,7 +479,7 @@ export function ChatInterface({ sessionId, onSessionUpdate }: ChatInterfaceProps
                 <div className="flex-shrink-0 w-12 h-12 relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-pulse opacity-20"></div>
                   <div className="absolute inset-1 bg-gradient-to-r from-blue-600 to-purple-700 rounded-full flex items-center justify-center shadow-lg">
-                    <img src="/logo2.png" alt="AI" className="w-6 h-6 object-contain" />
+                    <Image src="/logo2.png" alt="AI" className="w-6 h-6 object-contain" width={50} height={50}/>
                   </div>
                   <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full animate-ping opacity-30"></div>
                 </div>
